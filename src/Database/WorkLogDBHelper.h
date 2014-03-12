@@ -27,9 +27,11 @@ private:
 	void createTable()   throw(DBFailureException);
 
 	/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
+	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex)
+		throw(DBFailureException);
 
-	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex);
 public:
-	std::vector<WorkLogData> getWorkLog();
+	std::vector<WorkLogData>& getWorkLog();
+	WorkLogData& getWorkLogByIndex(int index);
 	void writeWorkLog(WorkLogData& values) throw(DBFailureException);
 };

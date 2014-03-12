@@ -4,6 +4,7 @@
 #include "../../Lib/StringUtils.hpp"
 #include "../../Lib/SystemUtils.hpp"
 #include "../../Database/DBFailureException.h"
+#include <vector>
 #include <iostream>
 #include <random>
 #include <sstream>
@@ -14,9 +15,21 @@
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
+void ActionControl::doViewWorkLogList(){
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
+	for(int i=0; i<workLog.size(); i++){
+		std::cout << "|"
+		          << workLog[i].getId()       << "\t|"
+		          << workLog[i].getTime()     << "\t|"
+		          << workLog[i].getFunction() << "\t|"
+		          << workLog[i].getTarget()   << "\t|"
+		          << std::endl;
+	}
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-void ActionControl::doWriteWorkLog(){
+void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 	/* シェル変数読み込み */
 	std::string editor = std::getenv("EDITOR");
 
@@ -33,6 +46,24 @@ void ActionControl::doWriteWorkLog(){
 		std::stringstream ss;
 		ss << "/tmp/" << rand();
 		fileList[i] = ss.str();
+	}
+
+	/* 再編集モードならあらかじめテキストの内容をセットしておく */
+	if(reeditFlag){
+		std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
+		int i;
+		for(i=0; i<workLog.size(); i++)  if(workLog[i].getId() == id){
+			std::ofstream fout(fileList[0], std::ios::out);
+			fout << workLog[i].getFunction();
+			fout.close();  fout.open(fileList[1], std::ios::out);
+			fout << workLog[i].getTarget();
+			fout.close();  fout.open(fileList[2], std::ios::out);
+			fout << workLog[i].getComment();
+		}
+		if(i == workLog.size()){
+			std::cerr << ">> No such WorkLog ID: " << id << std::endl;;
+			return;
+		}
 	}
 
 	/* 処理、対象、コメントを読み込み */
@@ -87,12 +118,11 @@ void ActionControl::doWriteWorkLog(){
 	/* データベースに書き込み */
 	try{
 		WorkLogData logData( time(nullptr), texts[0].str(), texts[1].str(), texts[2].str() );
-		WorkLogDBHelper dbHelper;
-		dbHelper.writeWorkLog(logData);
+		m_dbHelper.writeWorkLog(logData);
 	}catch(DBFailureException e){
-		std::cerr << e.what()                                << std::endl
-		          << ">> Writing to Database faild"          << std::endl
-		          << ">> Directory Permission is Writable ?" << std::endl;
+		std::cerr << e.what()                                             << std::endl
+		          << ">> Writing to Database faild"                       << std::endl
+		          << ">> Directory Permission is Readable and Writable ?" << std::endl;
 		return;
 	}
 	std::cout << std::endl
@@ -102,6 +132,7 @@ void ActionControl::doWriteWorkLog(){
 
 }
 #pragma GCC diagnostic pop
+#pragma GCC diagnostic push
 
 /* --==--==--==--==--==--==--==--==--==-- */
 

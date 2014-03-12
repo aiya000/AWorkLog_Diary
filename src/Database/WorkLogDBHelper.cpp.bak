@@ -115,6 +115,18 @@ void WorkLogDBHelper::createTable() throw(DBFailureException){
 std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int endIndex)
 	throw(DBFailureException)
 {
+	auto convert = [](char** load, const unsigned char* str){
+		int i;
+		for(i=0; str[i]!='\0'; i++)
+			*load[i] = str[i];
+		*load[i] = '\0';
+	};
+	auto ustrlen = [](const unsigned char* str) -> int {
+		int i=0;
+		for(i=0; str[i]!='\0'; i++);
+		return i;
+	};
+
 	/*
 	 * TODO:現在全体取得になっています。
 	 */
@@ -128,13 +140,22 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 
 	int r;
 	while( (r = sqlite3_step(stmt)) == SQLITE_ROW ){
-		// sqlite3_column_textの戻り値はなぜかconst unsigned char*...。
+		// unsigned char* から char* へ変換
+		char* texts[3];
+		for(int i=0; i<3; i++){
+			const unsigned char* detail = sqlite3_column_text(stmt, 2+i);
+			//const int LEN  = ustrlen(detail);
+			//char text[LEN];  convert(&text, detail);
+			char* text;  convert(&text, detail);
+			texts[i] = text;
+		}
+
 		WorkLogData rowData(
 				sqlite3_column_int(stmt, 0),  // id
 				sqlite3_column_int(stmt, 1),  // time
-				reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2)), // function
-				reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)), // target
-				reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4))  // comment
+				texts[0], // function
+				texts[1], // target
+				texts[2]  // comment
 				);
 		workLog.push_back(rowData);
 	}
@@ -150,10 +171,10 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 
 /**-**** Public ****-**/
 
-std::vector<WorkLogData>& WorkLogDBHelper::getWorkLog(){
+std::vector<WorkLogData> WorkLogDBHelper::getWorkLog(){
 	return m_workLog;
 }
-WorkLogData& WorkLogDBHelper::getWorkLogByIndex(int index){
+WorkLogData WorkLogDBHelper::getWorkLogByIndex(int index){
 	return m_workLog[index];
 }
 
