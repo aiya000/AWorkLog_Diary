@@ -33,5 +33,6 @@ private:
 public:
 	std::vector<WorkLogData>& getWorkLog();
 	WorkLogData& getWorkLogByIndex(int index);
-	void writeWorkLog(WorkLogData& values) throw(DBFailureException);
+	void writeWorkLog(WorkLogData& values)  throw(DBFailureException);
+	void updateWorkLog(WorkLogData& values) throw(DBFailureException);
 };

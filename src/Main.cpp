@@ -1,7 +1,6 @@
 #include <iostream>
-#include "Screen/Select.h"
+#include "Shell/Shell.h"
 
-#include "Database/WorkLogDBHelper.h"
 int main(){
 	Select screen;
 	screen.run();

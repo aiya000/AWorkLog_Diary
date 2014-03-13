@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <dirent.h>
+#include <cassert>
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
@@ -158,6 +159,9 @@ WorkLogData& WorkLogDBHelper::getWorkLogByIndex(int index){
 }
 
 void WorkLogDBHelper::writeWorkLog(WorkLogData& values) throw(DBFailureException){
+	if(values.getId() != -1)
+		throw DBFailureException("内部エラー: 新規DB書き込みの場合はIDが-1のはずです。");
+
 	sqlite3_stmt* stmt;
 	const std::string INSERT_SQL = std::string() +
 		"INSERT INTO " + TABLE_NAME + "(time, function, target, comment)" + 
@@ -171,6 +175,27 @@ void WorkLogDBHelper::writeWorkLog(WorkLogData& values) throw(DBFailureException
 
 	for(int i=0; sqlite3_step(stmt) != SQLITE_DONE; i++)
 		if(i > 1000)  throw DBFailureException("Insert SQL TimeOut");
+	sqlite3_finalize(stmt);
+}
+
+void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureException){
+	if(values.getId() == -1)
+		throw DBFailureException("内部エラー: 既存データ書き換えの場合はIDが-1ではないはずです。");
+
+	sqlite3_stmt* stmt;
+	const std::string UPDATE_SQL = std::string() +
+		"UPDATE " + TABLE_NAME +
+		" SET " + "function='?',target='?',comment='?'"  +
+		" WHERE id=?;";
+	sqlite3_prepare(m_con, UPDATE_SQL.c_str(), UPDATE_SQL.size(), &stmt, nullptr);
+	sqlite3_reset(stmt);
+	sqlite3_bind_text(stmt, 1, values.getFunction().c_str(), -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(stmt, 2, values.getTarget().c_str(),   -1, SQLITE_TRANSIENT);
+	sqlite3_bind_text(stmt, 3, values.getComment().c_str(),  -1, SQLITE_TRANSIENT);
+	sqlite3_bind_int(stmt,  4, values.getId());
+
+	for(int i=0; sqlite3_step(stmt) != SQLITE_DONE; i++)
+		if(i > 1000)  throw DBFailureException("Update SQL TimeOut");
 	sqlite3_finalize(stmt);
 }
 
