@@ -5,6 +5,7 @@
 
 class Select {
 private:
+	/* 認識するコマンドとその列挙 */
 	static constexpr int CMD_LEN = 12;
 	static const std::string CMD_LIST[CMD_LEN];
 	enum CmdEnum {
@@ -16,6 +17,8 @@ private:
 		Q      = 8  , EXIT   = 9  , 
 		H      = 10 , HELP   = 11
 	};
+
+	/* 呼び出されるのアクション管理 */
 	ActionControl action;
 
 public:

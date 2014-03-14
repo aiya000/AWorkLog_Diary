@@ -15,8 +15,9 @@
 /* --==--==--==--==--==--==--==--==--==-- */
 bool ActionControl::confirm(){
 	while(true){
-		std::cout << "Do write Database, OK? (y/n)" << std::endl;
-		char confirm = std::cin.get();
+		std::cout << "Apply Operation, OK? (y/n)" << std::endl;
+		char confirm;
+		std::cin >> confirm;
 		if(confirm == 'y' || confirm == 'Y')
 			return true;
 		else if(confirm == 'n' || confirm == 'N')
@@ -37,6 +38,24 @@ void ActionControl::doViewWorkLogList(){
 		          << workLog[i].getFunction() << "\t|"
 		          << workLog[i].getTarget()   << "\t|"
 		          << std::endl;
+	}
+}
+
+void ActionControl::doViewWorkLogDetail(int id){
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
+	int i;
+	try{
+		WorkLogData data = m_dbHelper.getWorkLogSearchById(id);
+		std::cout << " --------------------"                        << std::endl
+		          << " Time: "                << data.getTime()     << std::endl
+		          << " Function: "            << data.getFunction() << std::endl
+		          << " Target: "              << data.getTarget()   << std::endl
+		          << " Comment: "                                    << std::endl;
+				  for(std::string line : alib::split(data.getComment(), '\n'))
+					  std::cout << " % " << line << std::endl;
+		std::cout << " --------------------"                        << std::endl;
+	}catch(DBFailureException e){
+		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 	}
 }
 
@@ -63,19 +82,16 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 
 	/* 再編集モードならあらかじめテキストの内容をセットしておく */
 	if(reeditFlag){
-		std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
-		int i;
-		for(i=0; i<workLog.size(); i++)  if(workLog[i].getId() == id){
+		try{
+			WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
 			std::ofstream fout(fileList[0], std::ios::out);
-			fout << workLog[i].getFunction();
+			fout << workLog.getFunction();
 			fout.close();  fout.open(fileList[1], std::ios::out);
-			fout << workLog[i].getTarget();
+			fout << workLog.getTarget();
 			fout.close();  fout.open(fileList[2], std::ios::out);
-			fout << workLog[i].getComment();
-			break;
-		}
-		if(i == workLog.size()){
-			std::cerr << ">> No such WorkLog ID: " << id << std::endl;;
+			fout << workLog.getComment();
+		}catch(DBFailureException e){
+			std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 			return;
 		}
 	}
@@ -85,7 +101,7 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 	for(int i=0; i<FILE_NUM; i++){
 		if( system( (editor+" "+fileList[i]).c_str() ) == -1 ){
 			std::cerr << ">> Opening $EDITOR faild"   << std::endl
-				<< ">> Do you have an editor ?" << std::endl;
+			          << ">> Do you have an editor ?" << std::endl;
 			return;
 		}else{
 			std::ifstream fin(fileList[i], std::ios::in);
@@ -94,32 +110,38 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 			try{
 				// Commentのみ処理を特殊化
 				if(i != 2){
-					std::getline(fin, line);
+					fin >> line;
 					texts[i] << line;
-					if(texts[i].str() == "")  throw DBFailureException("Text is Empty");
-				}else while( std::getline(fin, line) ){
-					texts[i] << line << std::endl;
-					std::cout << "Warn>> Comment is Empty" << std::endl;
+					if(line == "")  throw DBFailureException("Text is Empty");
+				}else{
+					while( fin >> line )
+						texts[i] << line << std::endl;
+					if(line == "")
+						std::cout << "Warn>> Comment is Empty" << std::endl;
 				}
 			}catch(DBFailureException e){
 				std::cout << ">> " << e.what() << std::endl;
 				std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
 
 				bool getFlag = false;
-				while(!getFlag) switch( std::cin.get() ){
-				case 'r':
-					i--;
-				case 'c':
-					getFlag = true;
-					break;
-				case 'a':
-					std::cout << ">> Operation Aborted" << std::endl;
-					return;
-				default:
-					std::cout << ">> Please [c] or [r] or [a]." << std::endl;
-					break;
+				char a;
+				while(!getFlag){
+					std::cin >> a;
+					switch(a){
+						case 'r':
+							i--;
+						case 'c':
+							getFlag = true;
+							break;
+						case 'a':
+							std::cout << ">> Operation Aborted" << std::endl;
+							return;
+						default:
+							std::cout << ">> Please [c] or [r] or [a]." << std::endl;
+							break;
+					}
+					continue;
 				}
-				continue;
 
 			}
 		}
@@ -130,6 +152,14 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 		std::remove(file.c_str());
 
 	/* データベースに書き込み */
+	std::cout << " --------------------"        << std::endl
+	          << "Function: " << texts[0].str() << std::endl
+	          << "Target: "   << texts[1].str() << std::endl
+	          << "Comment: "                    << std::endl;
+			  std::string line;
+			  while( texts[2] >> line )
+				  std::cout << "% " << line << std::endl;
+	std::cout << " --------------------"        << std::endl;
 	if(this->confirm()){
 		try{
 			if(!reeditFlag){
@@ -155,6 +185,24 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 }
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic push
+
+void ActionControl::doRemoveWorkLog(int id){
+	try{
+		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
+		std::cout << " --------------------"                        << std::endl
+			<< "Time: "                << workLog.getTime()     << std::endl
+			<< "Function: "            << workLog.getFunction() << std::endl
+			<< "Target: "              << workLog.getTarget()   << std::endl
+			<< " --------------------"                        << std::endl;
+	}catch(DBFailureException e){
+		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
+		return;
+	}
+
+	std::cout << ">> Remove This WorkLog." << std::endl;
+	if(this->confirm())
+		m_dbHelper.removeWorkLog(id);
+}
 
 /* --==--==--==--==--==--==--==--==--==-- */
 

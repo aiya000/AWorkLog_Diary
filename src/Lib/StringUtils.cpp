@@ -11,8 +11,7 @@ namespace alib {
 		va_list args;
 
 		va_start(args, format);
-		std::vsprintf(f, format, args);
-		va_end(args);
+		std::vsprintf(f, format, args); va_end(args);
 
 		return std::string(f);
 	}
@@ -38,6 +37,23 @@ namespace alib {
 	}
 	std::string trim(const std::string&& str, const char* trimChars){
 		return trim(str, trimChars);
+	}
+
+	/* --==--==--==--==--==--==--==--==--==--==-- */
+	std::vector<std::string> split(const std::string& str, const char delimiter){
+		std::vector<std::string> devided;
+		int current = 0, i;
+		for(i=0; i<str.size(); i++){
+			if(str[i] == delimiter){
+				devided.push_back( str.substr(current, i-current) );
+				current = i+1;
+			}
+		}
+		devided.push_back( str.substr(current) );
+		return devided;
+	}
+	std::vector<std::string> split(const std::string&& str, const char delimiter){
+		return split(str, delimiter);
 	}
 
 	/* --==--==--==--==--==--==--==--==--==--==-- */

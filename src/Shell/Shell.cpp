@@ -95,11 +95,10 @@ inline void Select::list(){
 	action.doViewWorkLogList();
 }
 
-//TODO
 inline void Select::view(){
 	int selectId = this->getInput();
 	if(selectId != 0)
-		action.doWriteWorkLog(true, selectId);
+		action.doViewWorkLogDetail(selectId);
 	else
 		std::cout << "Aborted" << std::endl;
 	std::cout << std::endl;
@@ -118,18 +117,23 @@ inline void Select::reedit(){
 	std::cout << std::endl;
 }
 
-//TODO
 inline void Select::remove(){
+	int selectId = this->getInput();
+	if(selectId != 0)
+		action.doRemoveWorkLog(selectId);
+	else
+		std::cout << "Aborted" << std::endl;
+	std::cout << std::endl;
 }
 
 inline void Select::help(){
 	std::cout << std::endl
-	           << "[view]:"               << "\t\t\t" << "Viewing Worklog"                 << std::endl
-	           << "[edit]:"               << "\t\t\t" << "Editing Worklog"                 << std::endl
-	           << "[reedit] or [revise]:" << "\t"     << "Re Editing WorkLog"              << std::endl
-	           << "[remove]:"             << "\t\t"   << "Selecting and Removinng Worklog" << std::endl
-	           << "[q] or [exit]:"        << "\t\t" << "Exiting Shell"                   << std::endl
-	           << "[h] or [help]:"        << "\t\t" << "Viewing This Help"               << std::endl
+	           << "[view n]:"                 << "\t\t\t" << "Worklog View by given ID"     << std::endl
+	           << "[edit]:"                   << "\t\t\t\t" << "Worklog Edit"                 << std::endl
+	           << "[reedit n] or [revise n]:" << "\t"     << "Re Edit WorkLog by given ID"  << std::endl
+	           << "[remove n]:"               << "\t\t\t"   << "Remove Worklog by given ID"   << std::endl
+	           << "[q] or [exit]:"            << "\t\t\t"   << "Exiting Shell"                << std::endl
+	           << "[h] or [help]:"            << "\t\t\t"   << "View This Help"               << std::endl
 	           << std::endl;
 }
 

@@ -12,7 +12,7 @@
 
 WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 	TABLE_NAME("WorkLog"),
-	CREATE_TABLE(std::string("") +
+	CREATE_TABLE(
 		"CREATE TABLE " + TABLE_NAME +
 		"(" +
 		" id        integer       primary key autoincrement," +
@@ -23,7 +23,7 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		");")
 {
 	ConfigLoader loader;
-	const char* DB_PATH = loader.getDbPath().c_str();
+	const std::string DB_PATH = loader.getDbPath();
 
 	/* ワークディレクトリ -> ディレクトリ作成 */
 	bool dirExist = this->directoryIsFound();
@@ -33,9 +33,9 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		mkdir(loader.getWorkDirPath().c_str(), 0744);
 	}
 
-	int err = sqlite3_open(DB_PATH, &m_con);
+	int err = sqlite3_open(DB_PATH.c_str(), &m_con);
 	if(err != SQLITE_OK)
-		throw DBFailureException(std::string()+"Connection faild["+DB_PATH+"]");
+		throw DBFailureException("Connection faild["+DB_PATH+"]");
 
 	/* テーブルチェック -> DB初期化 */
 	if( !dirExist || !this->tableIsFound() ){
@@ -69,11 +69,10 @@ void WorkLogDBHelper::close(){
 bool WorkLogDBHelper::directoryIsFound(){
 	ConfigLoader dir;
 	const std::string WORK_PATH = dir.getWorkDirPath();
-	if( !opendir(WORK_PATH.c_str()) ){
+	if( !opendir(WORK_PATH.c_str()) )
 		return false;
-	}else{
+	else
 		return true;
-	}
 }
 
 bool WorkLogDBHelper::tableIsFound(){
@@ -148,15 +147,23 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 	return workLog;
 }
 
+void WorkLogDBHelper::refreshWorkLogContainer(){
+	m_workLog = this->loadWorkLogByIndex(0, 9);
+}
+
 
 /**-**** Public ****-**/
 
 std::vector<WorkLogData>& WorkLogDBHelper::getWorkLog(){
 	return m_workLog;
 }
-WorkLogData& WorkLogDBHelper::getWorkLogByIndex(int index){
-	return m_workLog[index];
+WorkLogData& WorkLogDBHelper::getWorkLogSearchById(int id) throw(DBFailureException){
+	for(int i=0; i<m_workLog.size(); i++)
+		if(id == m_workLog[i].getId())
+			return m_workLog[i];
+	throw DBFailureException("Not Found Database Data, Search By ID");
 }
+
 
 void WorkLogDBHelper::writeWorkLog(WorkLogData& values) throw(DBFailureException){
 	if(values.getId() != -1)
@@ -176,6 +183,8 @@ void WorkLogDBHelper::writeWorkLog(WorkLogData& values) throw(DBFailureException
 	for(int i=0; sqlite3_step(stmt) != SQLITE_DONE; i++)
 		if(i > 1000)  throw DBFailureException("Insert SQL TimeOut");
 	sqlite3_finalize(stmt);
+
+	this->refreshWorkLogContainer();
 }
 
 void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureException){
@@ -183,7 +192,7 @@ void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureExceptio
 		throw DBFailureException("内部エラー: 既存データ書き換えの場合はIDが-1ではないはずです。");
 
 	sqlite3_stmt* stmt;
-	const std::string UPDATE_SQL = std::string() +
+	const std::string UPDATE_SQL =
 		"UPDATE " + TABLE_NAME +
 		" SET " + "function='?',target='?',comment='?'"  +
 		" WHERE id=?;";
@@ -197,6 +206,27 @@ void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureExceptio
 	for(int i=0; sqlite3_step(stmt) != SQLITE_DONE; i++)
 		if(i > 1000)  throw DBFailureException("Update SQL TimeOut");
 	sqlite3_finalize(stmt);
+
+	this->refreshWorkLogContainer();
+}
+
+void WorkLogDBHelper::removeWorkLog(int id) throw(DBFailureException){
+	if(id < 0)
+		throw DBFailureException("不明なID指定です");
+
+	sqlite3_stmt* stmt;
+	const std::string DELETE_SQL =
+		"DELETE FROM " + TABLE_NAME +
+		" WHERE id=?;";
+	sqlite3_prepare(m_con, DELETE_SQL.c_str(), DELETE_SQL.size(), &stmt, nullptr);
+	sqlite3_reset(stmt);
+	sqlite3_bind_int(stmt, 1, id);
+
+	for(int i=0; sqlite3_step(stmt) != SQLITE_DONE; i++)
+		if(i > 1000)  throw DBFailureException("Delete SQL TimeOut");
+	sqlite3_finalize(stmt);
+
+	this->refreshWorkLogContainer();
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */

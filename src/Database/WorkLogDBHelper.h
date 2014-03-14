@@ -24,15 +24,18 @@ private:
 	// データ格納テーブルの存在確認
 	bool tableIsFound();
 
-	void createTable()   throw(DBFailureException);
+	void createTable() throw(DBFailureException);
 
 	/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
 	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex)
 		throw(DBFailureException);
+	void refreshWorkLogContainer();  // -> m_workLog;
 
 public:
 	std::vector<WorkLogData>& getWorkLog();
-	WorkLogData& getWorkLogByIndex(int index);
-	void writeWorkLog(WorkLogData& values)  throw(DBFailureException);
-	void updateWorkLog(WorkLogData& values) throw(DBFailureException);
+	WorkLogData& getWorkLogSearchById(int id) throw(DBFailureException);
+
+	void writeWorkLog(WorkLogData& values)    throw(DBFailureException);
+	void updateWorkLog(WorkLogData& values)   throw(DBFailureException);
+	void removeWorkLog(int id)  throw(DBFailureException);
 };
