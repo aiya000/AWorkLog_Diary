@@ -4,6 +4,8 @@ Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
+Lib/StreamUtils.hpp             \
+Lib/StreamUtils.cpp             \
 Lib/SystemUtils.cpp             \
 Lib/SystemUtils.hpp             \
 Shell/Shell.h                   \
@@ -18,4 +20,5 @@ Database/DBFailureException.cpp \
 Database/WorkLogData.h          \
 Database/WorkLogData.cpp        \
 Main.cpp
-diary_CFLAGS = -lsqlite3
+diary_CFLAGS = "-lsqlite3"
+diary_CXXFLAGS = "-std=c++11"

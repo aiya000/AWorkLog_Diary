@@ -2,6 +2,7 @@
 #include "../../Database/WorkLogDBHelper.h"
 #include "../../Database/WorkLogData.h"
 #include "../../Lib/StringUtils.hpp"
+#include "../../Lib/StreamUtils.hpp"
 #include "../../Lib/SystemUtils.hpp"
 #include "../../Database/DBFailureException.h"
 #include <vector>
@@ -99,7 +100,8 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 	/* 処理、対象、コメントを読み込み */
 	std::stringstream texts[3];
 	for(int i=0; i<FILE_NUM; i++){
-		if( system( (editor+" "+fileList[i]).c_str() ) == -1 ){
+		int err = system( (editor+" "+fileList[i]).c_str() );
+		if(err == -1){
 			std::cerr << ">> Opening $EDITOR faild"   << std::endl
 			          << ">> Do you have an editor ?" << std::endl;
 			return;
@@ -114,6 +116,8 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 					texts[i] << line;
 					if(line == "")  throw DBFailureException("Text is Empty");
 				}else{
+					alib::unsetStreamDelimiterSpace(fin);
+					alib::unsetStreamDelimiterSpace(texts[i]);
 					while( fin >> line )
 						texts[i] << line << std::endl;
 					if(line == "")
@@ -152,14 +156,14 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 		std::remove(file.c_str());
 
 	/* データベースに書き込み */
-	std::cout << " --------------------"        << std::endl
-	          << "Function: " << texts[0].str() << std::endl
-	          << "Target: "   << texts[1].str() << std::endl
-	          << "Comment: "                    << std::endl;
+	std::cout << " --------------------"         << std::endl
+	          << " Function: " << texts[0].str() << std::endl
+	          << " Target: "   << texts[1].str() << std::endl
+	          << " Comment: "                    << std::endl;
 			  std::string line;
 			  while( texts[2] >> line )
-				  std::cout << "% " << line << std::endl;
-	std::cout << " --------------------"        << std::endl;
+				  std::cout << " % " << line << std::endl;
+	std::cout << " --------------------"         << std::endl;
 	if(this->confirm()){
 		try{
 			if(!reeditFlag){
@@ -170,15 +174,15 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 				m_dbHelper.updateWorkLog(logData);
 			}
 		}catch(DBFailureException e){
-			std::cerr << e.what()                                       << std::endl
-				<< ">> Writing to Database faild"                       << std::endl
-				<< ">> Directory Permission is Readable and Writable ?" << std::endl;
+			std::cerr << e.what()                                             << std::endl
+			          << ">> Writing to Database faild"                       << std::endl
+			          << ">> Directory Permission is Readable and Writable ?" << std::endl;
 			return;
 		}
 		std::cout << std::endl
-			<< " --------------------" << std::endl
-			<< " >> WorkLog Witten ! " << std::endl
-			<< " --------------------" << std::endl;
+		          << " --------------------" << std::endl
+		          << " >> WorkLog Witten ! " << std::endl
+		          << " --------------------" << std::endl;
 	}else{
 		std::cout << " >> Witten Cancelled! " << std::endl;
 	}
@@ -189,11 +193,11 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 void ActionControl::doRemoveWorkLog(int id){
 	try{
 		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
-		std::cout << " --------------------"                        << std::endl
-			<< "Time: "                << workLog.getTime()     << std::endl
-			<< "Function: "            << workLog.getFunction() << std::endl
-			<< "Target: "              << workLog.getTarget()   << std::endl
-			<< " --------------------"                        << std::endl;
+		std::cout << " --------------------"                          << std::endl
+		          << "Time: "                << workLog.getTime()     << std::endl
+		          << "Function: "            << workLog.getFunction() << std::endl
+		          << "Target: "              << workLog.getTarget()   << std::endl
+		          << " --------------------"                          << std::endl;
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 		return;

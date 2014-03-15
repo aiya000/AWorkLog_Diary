@@ -194,7 +194,7 @@ void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureExceptio
 	sqlite3_stmt* stmt;
 	const std::string UPDATE_SQL =
 		"UPDATE " + TABLE_NAME +
-		" SET " + "function='?',target='?',comment='?'"  +
+		" SET " + "function=?,target=?,comment=?"  +
 		" WHERE id=?;";
 	sqlite3_prepare(m_con, UPDATE_SQL.c_str(), UPDATE_SQL.size(), &stmt, nullptr);
 	sqlite3_reset(stmt);
