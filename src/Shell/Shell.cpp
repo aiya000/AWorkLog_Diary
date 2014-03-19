@@ -105,13 +105,13 @@ inline void Select::view(){
 }
 
 inline void Select::edit(){
-	action.doWriteWorkLog();
+	action.doEditWorkLog();
 }
 
 inline void Select::reedit(){
 	int selectId = this->getInput();
 	if(selectId != 0)
-		action.doWriteWorkLog(true, selectId);
+		action.doEditWorkLog(true, selectId);
 	else
 		std::cout << "Aborted" << std::endl;
 	std::cout << std::endl;

@@ -3,9 +3,14 @@
 namespace alib {
 
 	/* --==--==--==--==--==--==--==--==--==--==-- */
+	SystemException::SystemException(std::string cause)
+		: std::runtime_error(cause){}
 	SystemCommandCallException::SystemCommandCallException(std::string cause)
-		: std::runtime_error("SystemCommandCallException" + cause){}
+		: SystemException("SystemCommandCallException" + cause){}
+	SystemInterruptedException::SystemInterruptedException(std::string cause)
+		: SystemException("SystemInterruptedException" + cause){}
 
 	/* --==--==--==--==--==--==--==--==--==--==-- */
 
 }
+

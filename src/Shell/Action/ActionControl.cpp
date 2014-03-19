@@ -10,8 +10,12 @@
 #include <random>
 #include <sstream>
 #include <fstream>
+#include <utility>
 #include <cstdio>
 #include <cstdlib>
+#include <cassert>
+
+/* --==--==--==--==--==--==--==--==--==-- */
 
 /* --==--==--==--==--==--==--==--==--==-- */
 bool ActionControl::confirm(){
@@ -26,6 +30,19 @@ bool ActionControl::confirm(){
 		std::cout << "Please [y] or [n]" << std::endl;
 	}
 	std::cout << std::endl;
+}
+
+void ActionControl::viewDetails(WorkLogData workLog, bool viewComment){
+		std::cout << " --------------------"                           << std::endl
+		          << " Time: "                << workLog.getTime()     << std::endl
+		          << " Function: "            << workLog.getFunction() << std::endl
+		          << " Target: "              << workLog.getTarget()   << std::endl;
+		if(viewComment){
+			std::cout << " Comment: " << std::endl;
+			for(std::string line : alib::split(workLog.getComment(), '\n'))
+				std::cout << " % " << line << std::endl;
+		}
+		std::cout << " --------------------"                        << std::endl;
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
@@ -43,18 +60,10 @@ void ActionControl::doViewWorkLogList(){
 }
 
 void ActionControl::doViewWorkLogDetail(int id){
-	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
 	int i;
 	try{
-		WorkLogData data = m_dbHelper.getWorkLogSearchById(id);
-		std::cout << " --------------------"                        << std::endl
-		          << " Time: "                << data.getTime()     << std::endl
-		          << " Function: "            << data.getFunction() << std::endl
-		          << " Target: "              << data.getTarget()   << std::endl
-		          << " Comment: "                                    << std::endl;
-				  for(std::string line : alib::split(data.getComment(), '\n'))
-					  std::cout << " % " << line << std::endl;
-		std::cout << " --------------------"                        << std::endl;
+		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
+		this->viewDetails(workLog, true);
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 	}
@@ -62,13 +71,10 @@ void ActionControl::doViewWorkLogDetail(int id){
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wwrite-strings"
-void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
-	/* シェル変数読み込み */
-	std::string editor = std::getenv("EDITOR");
-
+void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 	/* 乱数でテンポラリファイル名を作成 */
-	std::string fileList[3];
-	const int FILE_NUM = 3;
+	constexpr int FILE_NUM = 3;
+	std::string fileList[FILE_NUM];
 	/*
 	 * Function
 	 * Target
@@ -98,79 +104,23 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 	}
 
 	/* 処理、対象、コメントを読み込み */
-	std::stringstream texts[3];
-	for(int i=0; i<FILE_NUM; i++){
-		int err = system( (editor+" "+fileList[i]).c_str() );
-		if(err == -1){
-			std::cerr << ">> Opening $EDITOR faild"   << std::endl
-			          << ">> Do you have an editor ?" << std::endl;
-			return;
-		}else{
-			std::ifstream fin(fileList[i], std::ios::in);
-			std::string line;
-
-			try{
-				// Commentのみ処理を特殊化
-				if(i != 2){
-					fin >> line;
-					texts[i] << line;
-					if(line == "")  throw DBFailureException("Text is Empty");
-				}else{
-					alib::unsetStreamDelimiterSpace(fin);
-					alib::unsetStreamDelimiterSpace(texts[i]);
-					while( fin >> line )
-						texts[i] << line << std::endl;
-					if(line == "")
-						std::cout << "Warn>> Comment is Empty" << std::endl;
-				}
-			}catch(DBFailureException e){
-				std::cout << ">> " << e.what() << std::endl;
-				std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
-
-				bool getFlag = false;
-				char a;
-				while(!getFlag){
-					std::cin >> a;
-					switch(a){
-						case 'r':
-							i--;
-						case 'c':
-							getFlag = true;
-							break;
-						case 'a':
-							std::cout << ">> Operation Aborted" << std::endl;
-							return;
-						default:
-							std::cout << ">> Please [c] or [r] or [a]." << std::endl;
-							break;
-					}
-					continue;
-				}
-
-			}
-		}
-	}
+	std::tr1::array<std::string,3> texts = 
+		this->editDetailsUseStdin(fileList[2], reeditFlag, id);
+		//this->editDetails(fileList[0], fileList[1], fileList[2]);
 
 	/* ファイル削除 */
 	for(std::string file : fileList)
 		std::remove(file.c_str());
 
 	/* データベースに書き込み */
-	std::cout << " --------------------"         << std::endl
-	          << " Function: " << texts[0].str() << std::endl
-	          << " Target: "   << texts[1].str() << std::endl
-	          << " Comment: "                    << std::endl;
-			  std::string line;
-			  while( texts[2] >> line )
-				  std::cout << " % " << line << std::endl;
-	std::cout << " --------------------"         << std::endl;
+	WorkLogData logData( time(nullptr), texts[0], texts[1], texts[2] );
+	this->viewDetails(logData, true);
 	if(this->confirm()){
 		try{
 			if(!reeditFlag){
-				WorkLogData logData( time(nullptr), texts[0].str(), texts[1].str(), texts[2].str() );
 				m_dbHelper.writeWorkLog(logData);
 			}else{
-				WorkLogData logData( id, time(nullptr), texts[0].str(), texts[1].str(), texts[2].str() );
+				logData.setId(id);
 				m_dbHelper.updateWorkLog(logData);
 			}
 		}catch(DBFailureException e){
@@ -193,11 +143,7 @@ void ActionControl::doWriteWorkLog(bool reeditFlag, int id){
 void ActionControl::doRemoveWorkLog(int id){
 	try{
 		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
-		std::cout << " --------------------"                          << std::endl
-		          << "Time: "                << workLog.getTime()     << std::endl
-		          << "Function: "            << workLog.getFunction() << std::endl
-		          << "Target: "              << workLog.getTarget()   << std::endl
-		          << " --------------------"                          << std::endl;
+		this->viewDetails(workLog);
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 		return;
@@ -209,4 +155,169 @@ void ActionControl::doRemoveWorkLog(int id){
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
+std::tr1::array<std::string,3> ActionControl::editDetails(/*{{{*/
+		const std::string& funcPath,
+		const std::string& tarPath,
+		const std::string& comPath)
+	throw(alib::SystemCommandCallException, alib::SystemInterruptedException)
+{
+	std::tr1::array<std::string,3> details;
+	constexpr int FILE_NUM = 3;
+	std::string fileList[] = { funcPath, tarPath, comPath };
 
+	/* シェル変数読み込み */
+	std::string editor = std::getenv("EDITOR");
+
+	for(int i=0; i<FILE_NUM; i++){
+		std::stringstream detail;
+
+		// Commentのみ処理を特殊化
+		int err = system( (editor+" "+fileList[i]).c_str() );
+		if(err == -1){
+			throw alib::SystemCommandCallException(
+					">> Opening $EDITOR faild"
+					">> Do you have an editor ?");
+		}else{
+			std::ifstream fin(fileList[i], std::ios::in);
+			std::string line;
+
+			try{
+				// Commentのみ処理を特殊化
+				if(i != 2){
+					fin >> line;
+					detail << line;
+					if(line == "")  throw DBFailureException("Text is Empty");
+				}else{
+					alib::unsetStreamDelimiterSpace(fin);
+					alib::unsetStreamDelimiterSpace(detail);
+					while( fin >> line )
+						detail << line << std::endl;
+					if(line == "")
+						std::cout << "Warn>> Comment is Empty" << std::endl;
+				}
+			}catch(DBFailureException e){
+				std::cout << ">> " << e.what() << std::endl;
+				std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
+
+				bool getFlag = false;
+				char a;
+				while(!getFlag){
+					std::cin >> a;
+					switch(a){
+						case 'r':
+							i--;
+						case 'c':
+							getFlag = true;
+							break;
+						case 'a':
+							throw alib::SystemInterruptedException(">> Operation Aborted");
+						default:
+							std::cout << ">> Please [c] or [r] or [a]." << std::endl;
+							break;
+					}
+					continue;
+				}
+
+			}
+		}
+
+		details[i] = detail.str();
+	}
+	return details;
+}/*}}}*/
+std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
+		const std::string& comPath,
+		bool reeditFlag,
+		int  id)
+	throw(alib::SystemCommandCallException, alib::SystemInterruptedException)
+{
+	std::tr1::array<std::string,3> details;
+	constexpr int FILE_NUM = 3;
+
+	/* ReEditモードのみで使うデータ */
+	WorkLogData *oldData;
+	if(reeditFlag)  oldData = &m_dbHelper.getWorkLogSearchById(id);
+
+	std::pair<std::string,std::string> entry[] = {
+		std::pair<std::string,std::string>("Function Type", (reeditFlag)? oldData->getFunction(): ""),
+		std::pair<std::string,std::string>("Target Name",   (reeditFlag)? oldData->getTarget():   "")
+	};
+
+	std::cin.ignore();  // flush (<- getline)
+	for(int i=0; i<FILE_NUM; i++){
+		std::stringstream detail;
+		// Commentのみ処理を特殊化
+		if(i != 2){
+			if(reeditFlag)
+				std::cout << "Do not change by Enter key" << std::endl;
+			std::cout << entry[i].first;
+			if(reeditFlag)
+				std::cout << '(' << entry[i].second << ')';
+			std::cout << ">> ";
+
+			std::string input;
+			bool inputFlag = false;
+			while(!inputFlag){
+				std::getline(std::cin, input);
+				if(input != ""){
+					inputFlag = true;
+				}else if(reeditFlag && input == ""){
+					input = entry[i].second;
+					inputFlag = true;
+				}
+			}
+			detail << input;
+
+		}else{
+			/* シェル変数読み込み */
+			std::string editor = std::getenv("EDITOR");
+
+			int err = system( (editor+" "+comPath).c_str() );
+			if(err == -1){
+				throw alib::SystemCommandCallException(
+						">> Opening $EDITOR faild"
+						">> Do you have an editor ?");
+			}else{
+				std::ifstream fin(comPath, std::ios::in);
+				std::string line;
+
+				try{
+					alib::unsetStreamDelimiterSpace(fin);
+					alib::unsetStreamDelimiterSpace(detail);
+					while( fin >> line )
+						detail << line << std::endl;
+					if(line == "")
+						std::cout << "Warn>> Comment is Empty" << std::endl;
+				}catch(DBFailureException e){
+					std::cout << ">> " << e.what() << std::endl;
+					std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
+
+					bool getFlag = false;
+					char a;
+					while(!getFlag){
+						std::cin >> a;
+						switch(a){
+							case 'r':
+								i--;
+							case 'c':
+								getFlag = true;
+								break;
+							case 'a':
+								throw alib::SystemInterruptedException(">> Operation Aborted");
+							default:
+								std::cout << ">> Please [c] or [r] or [a]." << std::endl;
+								break;
+						}
+						continue;
+					}
+				}
+
+			}
+		}
+
+		details[i] = detail.str();
+	}
+	return details;
+}/*}}}*/
+
+/* --==--==--==--==--==--==--==--==--==-- */

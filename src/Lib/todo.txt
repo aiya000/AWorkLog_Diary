@@ -1,0 +1,2 @@
+.*Utilsは「.*Util」の方がいいのでは？
+SystemUtilsとSystemExceptionは分離しよう。
