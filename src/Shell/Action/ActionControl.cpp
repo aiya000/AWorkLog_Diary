@@ -1,4 +1,5 @@
 #include "ActionControl.h"
+#include "../../Lib/Convert.hpp"
 #include "../../Database/WorkLogDBHelper.h"
 #include "../../Database/WorkLogData.h"
 #include "../../Lib/StringUtils.hpp"
@@ -33,10 +34,10 @@ bool ActionControl::confirm(){
 }
 
 void ActionControl::viewDetails(WorkLogData workLog, bool viewComment){
-		std::cout << " --------------------"                           << std::endl
-		          << " Time: "                << workLog.getTime()     << std::endl
-		          << " Function: "            << workLog.getFunction() << std::endl
-		          << " Target: "              << workLog.getTarget()   << std::endl;
+		std::cout << " --------------------"                                 << std::endl
+		          << " Time:\t\t"     << alib::timeToString(workLog.getTime()) << std::endl
+		          << " Function:\t" << workLog.getFunction()                 << std::endl
+		          << " Target:\t"   << workLog.getTarget()                   << std::endl;
 		if(viewComment){
 			std::cout << " Comment: " << std::endl;
 			for(std::string line : alib::split(workLog.getComment(), '\n'))
@@ -51,10 +52,10 @@ void ActionControl::doViewWorkLogList(){
 	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
 	for(int i=0; i<workLog.size(); i++){
 		std::cout << "|"
-		          << workLog[i].getId()       << "\t|"
-		          << workLog[i].getTime()     << "\t|"
-		          << workLog[i].getFunction() << "\t|"
-		          << workLog[i].getTarget()   << "\t|"
+		          << workLog[i].getId()                       << "\t|"
+		          << alib::timeToString(workLog[i].getTime()) << "\t|"
+		          << workLog[i].getFunction()                 << "\t|"
+		          << workLog[i].getTarget()                   << "\t|"
 		          << std::endl;
 	}
 }
@@ -252,7 +253,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 				std::cout << "Do not change by Enter key" << std::endl;
 			std::cout << entry[i].first;
 			if(reeditFlag)
-				std::cout << '(' << entry[i].second << ')';
+				std::cout << "(default " << entry[i].second << ')';
 			std::cout << ">> ";
 
 			std::string input;

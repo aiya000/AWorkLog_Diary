@@ -91,9 +91,10 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_diary_OBJECTS = diary-ConfigLoader.$(OBJEXT) \
-	diary-StringUtils.$(OBJEXT) diary-StreamUtils.$(OBJEXT) \
-	diary-SystemUtils.$(OBJEXT) diary-ActionControl.$(OBJEXT) \
-	diary-Shell.$(OBJEXT) diary-WorkLogDBHelper.$(OBJEXT) \
+	diary-Convert.$(OBJEXT) diary-StringUtils.$(OBJEXT) \
+	diary-StreamUtils.$(OBJEXT) diary-SystemUtils.$(OBJEXT) \
+	diary-ActionControl.$(OBJEXT) diary-Shell.$(OBJEXT) \
+	diary-WorkLogDBHelper.$(OBJEXT) \
 	diary-DBFailureException.$(OBJEXT) diary-WorkLogData.$(OBJEXT) \
 	diary-Main.$(OBJEXT)
 diary_OBJECTS = $(am_diary_OBJECTS)
@@ -266,6 +267,8 @@ top_srcdir = ..
 diary_SOURCES = \
 Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
+Lib/Convert.cpp                 \
+Lib/Convert.hpp                 \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
 Lib/StreamUtils.hpp             \
@@ -376,6 +379,7 @@ distclean-compile:
 
 include ./$(DEPDIR)/diary-ActionControl.Po
 include ./$(DEPDIR)/diary-ConfigLoader.Po
+include ./$(DEPDIR)/diary-Convert.Po
 include ./$(DEPDIR)/diary-DBFailureException.Po
 include ./$(DEPDIR)/diary-Main.Po
 include ./$(DEPDIR)/diary-Shell.Po
@@ -412,6 +416,20 @@ diary-ConfigLoader.obj: Config/ConfigLoader.cpp
 #	$(AM_V_CXX)source='Config/ConfigLoader.cpp' object='diary-ConfigLoader.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-ConfigLoader.obj `if test -f 'Config/ConfigLoader.cpp'; then $(CYGPATH_W) 'Config/ConfigLoader.cpp'; else $(CYGPATH_W) '$(srcdir)/Config/ConfigLoader.cpp'; fi`
+
+diary-Convert.o: Lib/Convert.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Convert.o -MD -MP -MF $(DEPDIR)/diary-Convert.Tpo -c -o diary-Convert.o `test -f 'Lib/Convert.cpp' || echo '$(srcdir)/'`Lib/Convert.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-Convert.Tpo $(DEPDIR)/diary-Convert.Po
+#	$(AM_V_CXX)source='Lib/Convert.cpp' object='diary-Convert.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Convert.o `test -f 'Lib/Convert.cpp' || echo '$(srcdir)/'`Lib/Convert.cpp
+
+diary-Convert.obj: Lib/Convert.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Convert.obj -MD -MP -MF $(DEPDIR)/diary-Convert.Tpo -c -o diary-Convert.obj `if test -f 'Lib/Convert.cpp'; then $(CYGPATH_W) 'Lib/Convert.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/Convert.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-Convert.Tpo $(DEPDIR)/diary-Convert.Po
+#	$(AM_V_CXX)source='Lib/Convert.cpp' object='diary-Convert.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Convert.obj `if test -f 'Lib/Convert.cpp'; then $(CYGPATH_W) 'Lib/Convert.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/Convert.cpp'; fi`
 
 diary-StringUtils.o: Lib/StringUtils.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-StringUtils.o -MD -MP -MF $(DEPDIR)/diary-StringUtils.Tpo -c -o diary-StringUtils.o `test -f 'Lib/StringUtils.cpp' || echo '$(srcdir)/'`Lib/StringUtils.cpp

@@ -2,6 +2,8 @@ bin_PROGRAMS = diary
 diary_SOURCES =                 \
 Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
+Lib/Convert.cpp                 \
+Lib/Convert.hpp                 \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
 Lib/StreamUtils.hpp             \
