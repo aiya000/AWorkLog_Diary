@@ -10,6 +10,8 @@ private:
 	const std::string TABLE_NAME;
 	const std::string CREATE_TABLE;
 	sqlite3 *m_con;
+public:
+	static const int LOAD_NUM = 20;
 
 public:
 	WorkLogDBHelper() throw(DBFailureException);
@@ -27,13 +29,15 @@ private:
 	void createTable() throw(DBFailureException);
 
 	/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex)
-		throw(DBFailureException);
+	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex);
 	void refreshWorkLogContainer();  // -> m_workLog;
 
 public:
 	std::vector<WorkLogData>& getWorkLog();
+	std::vector<WorkLogData>& getWorkLogByStartIndex(int start);
 	WorkLogData& getWorkLogSearchById(int id) throw(DBFailureException);
+
+	int getRowCount();
 
 	void writeWorkLog(WorkLogData& values)    throw(DBFailureException);
 	void updateWorkLog(WorkLogData& values)   throw(DBFailureException);

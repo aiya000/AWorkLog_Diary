@@ -42,16 +42,13 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		try{
 			this->createTable();
 		}catch(DBFailureException e){
+			sqlite3_close(m_con);
 			throw e;
 		}
 	}
 
-	/* ワークログから最初の10個を取得 */
-	try{
-		m_workLog = loadWorkLogByIndex(0, 9);
-	}catch(DBFailureException e){
-		throw e;
-	}
+	/* ワークログから最初の10個を初期取得 */
+	m_workLog = this->loadWorkLogByIndex(0, 20);
 }
 
 WorkLogDBHelper::~WorkLogDBHelper(){
@@ -112,23 +109,33 @@ void WorkLogDBHelper::createTable() throw(DBFailureException){
 
 /* -=-=-=-=-=- */
 
-std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int endIndex)
-	throw(DBFailureException)
-{
+std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int endIndex){
 	/*
-	 * TODO:現在全体取得になっています。
+	 * クエリをインターバルごとに読み取り
+	 * startIndex から endIndex-1 まで
 	 */
 	std::vector<WorkLogData> workLog;
 	const std::string SQL = std::string() +
 		"SELECT id, time, function, target, comment" +
-		" FROM " + TABLE_NAME + ";";
+		" FROM " + TABLE_NAME +
+		" ORDER BY time desc;";
 	sqlite3_stmt* stmt;
 	sqlite3_prepare(m_con, SQL.c_str(), SQL.size(), &stmt, nullptr);
 	sqlite3_reset(stmt);
 
 	int r;
-	while( (r = sqlite3_step(stmt)) == SQLITE_ROW ){
-		// sqlite3_column_textの戻り値はなぜかconst unsigned char*...。
+	/* startIndex-1まで読み飛ばし */// はたしてこの操作は本当にBigDataに対して通用するのか。
+	for(int i=0; i<startIndex-1; i++){
+		if(sqlite3_step(stmt) == SQLITE_DONE){
+			endIndex = i;
+			startIndex = endIndex - startIndex;
+			break;
+		}
+	}
+	for(int i=0; i<(endIndex-1)-startIndex; i++){
+		if(sqlite3_step(stmt) == SQLITE_DONE)  break;
+
+		// sqlite3_column_textの戻り値はなぜかconst unsigned char*なのでキャスト。
 		WorkLogData rowData(
 				sqlite3_column_int(stmt, 0),  // id
 				sqlite3_column_int(stmt, 1),  // time
@@ -138,17 +145,11 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 				);
 		workLog.push_back(rowData);
 	}
-	if(r != SQLITE_DONE)
-		throw DBFailureException("WorkLog Select Error");
-	/*
-	 * クエリをインターバルごとに読み取り
-	 * startIndex から endIndex-1 まで
-	 */
 	return workLog;
 }
 
 void WorkLogDBHelper::refreshWorkLogContainer(){
-	m_workLog = this->loadWorkLogByIndex(0, 9);
+	m_workLog = this->loadWorkLogByIndex(0, 20);
 }
 
 
@@ -157,11 +158,30 @@ void WorkLogDBHelper::refreshWorkLogContainer(){
 std::vector<WorkLogData>& WorkLogDBHelper::getWorkLog(){
 	return m_workLog;
 }
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogByStartIndex(int start){
+	m_workLog = this->loadWorkLogByIndex(start, start+LOAD_NUM);
+	return m_workLog;
+}
 WorkLogData& WorkLogDBHelper::getWorkLogSearchById(int id) throw(DBFailureException){
 	for(int i=0; i<m_workLog.size(); i++)
 		if(id == m_workLog[i].getId())
 			return m_workLog[i];
 	throw DBFailureException("Not Found Database Data, Search By ID");
+}
+
+
+int WorkLogDBHelper::getRowCount(){
+	const std::string COUNT_SQL = std::string() +
+		"SELECT count(*) " +
+		" FROM " + TABLE_NAME + ";";
+	sqlite3_stmt* stmt;
+	sqlite3_prepare(m_con, COUNT_SQL.c_str(), COUNT_SQL.size(), &stmt, nullptr);
+	sqlite3_reset(stmt);
+	sqlite3_step(stmt);
+
+	int count = sqlite3_column_int(stmt, 0);
+	sqlite3_finalize(stmt);
+	return count;
 }
 
 

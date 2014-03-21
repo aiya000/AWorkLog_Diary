@@ -14,15 +14,22 @@ class ActionControl {
 private:
 	WorkLogDBHelper m_dbHelper;
 	
+	// listp,listnコマンドに使用
+	int m_currentIndex;
 	/* --==--==--==--==-- */
+public:
+	ActionControl();
 
 	/* --==--==--==--==-- */
 private:
 	bool confirm();
 	void viewDetails(WorkLogData workLog, bool viewComment=false);
+	void viewColumn(WorkLogData workLog);
 
 	/* --==--==--==--==-- */
 public:
+	void incrementIndex();
+	void decrementIndex();
 	void doViewWorkLogList();
 	void doViewWorkLogDetail(int id);
 	// 再編集モードの場合true、DBのログidを引数に指定

@@ -17,6 +17,7 @@
 #include <cassert>
 
 /* --==--==--==--==--==--==--==--==--==-- */
+ActionControl::ActionControl() : m_currentIndex(0) {}
 
 /* --==--==--==--==--==--==--==--==--==-- */
 bool ActionControl::confirm(){
@@ -45,19 +46,34 @@ void ActionControl::viewDetails(WorkLogData workLog, bool viewComment){
 		}
 		std::cout << " --------------------"                        << std::endl;
 }
+void ActionControl::viewColumn(WorkLogData workLog){
+	std::cout << "|"
+	          << workLog.getId()                       << "\t|"
+	          << alib::timeToString(workLog.getTime()) << "\t|"
+	          << workLog.getFunction()                 << "\t|"
+	          << workLog.getTarget()                   << "\t|"
+	          << std::endl;
+}
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
+void ActionControl::incrementIndex(){
+	const int LOAD_NUM = WorkLogDBHelper::LOAD_NUM;
+	m_currentIndex += LOAD_NUM;
+	// countは1から、コンテナのindexは0から。
+	// getWorkLogByStartIndex(40)で取得するのは40~59までの19個。
+	if(m_currentIndex+LOAD_NUM > m_dbHelper.getRowCount())
+		m_currentIndex = m_dbHelper.getRowCount()-LOAD_NUM+2;  // なんで+2?+1+1?
+}
+void ActionControl::decrementIndex(){
+	m_currentIndex -= WorkLogDBHelper::LOAD_NUM;
+	if(m_currentIndex < 0)
+		m_currentIndex = 0;
+}
 void ActionControl::doViewWorkLogList(){
-	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLog();
-	for(int i=0; i<workLog.size(); i++){
-		std::cout << "|"
-		          << workLog[i].getId()                       << "\t|"
-		          << alib::timeToString(workLog[i].getTime()) << "\t|"
-		          << workLog[i].getFunction()                 << "\t|"
-		          << workLog[i].getTarget()                   << "\t|"
-		          << std::endl;
-	}
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogByStartIndex(m_currentIndex);
+	for(int i=0; i<workLog.size(); i++)
+		this->viewColumn(workLog[i]);
 }
 
 void ActionControl::doViewWorkLogDetail(int id){

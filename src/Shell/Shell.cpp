@@ -6,12 +6,14 @@
 #include "../Lib/StringUtils.hpp"
 
 const std::string Select::CMD_LIST[] = {
-	"list"   , "ls"     ,
+	"list"   , "ls"       , 
+	"listp"  , "listprev" , 
+	"listn"  , "listnext" , 
 	"view"   , 
-	"edit"   , "write"  , 
-	"reedit" , "revise" , 
+	"edit"   , "write"    , 
+	"reedit" , "revise"   , 
 	"remove" , 
-	"q"      , "exit"   , 
+	"q"      , "exit"     , 
 	"h"      , "help"
 };
 
@@ -48,6 +50,14 @@ bool Select::launch(std::string&& cmd) throw(std::invalid_argument){
 		case LIST:
 		case LS:
 			this->list();
+			break;
+		case LISTP:
+		case LISTPREV:
+			this->listprev();
+			break;
+		case LISTN:
+		case LISTNEXT:
+			this->listnext();
 			break;
 		case VIEW:
 			this->view();
@@ -94,6 +104,14 @@ inline int Select::getInput(){
 inline void Select::list(){
 	action.doViewWorkLogList();
 }
+inline void Select::listprev(){
+	action.decrementIndex();
+	action.doViewWorkLogList();
+}
+inline void Select::listnext(){
+	action.incrementIndex();
+	action.doViewWorkLogList();
+}
 
 inline void Select::view(){
 	int selectId = this->getInput();
@@ -128,12 +146,15 @@ inline void Select::remove(){
 
 inline void Select::help(){
 	std::cout << std::endl
-	           << "[view n]:"                 << "\t\t\t" << "Worklog View by given ID"     << std::endl
-	           << "[edit]:"                   << "\t\t\t\t" << "Worklog Edit"                 << std::endl
-	           << "[reedit n] or [revise n]:" << "\t"     << "Re Edit WorkLog by given ID"  << std::endl
-	           << "[remove n]:"               << "\t\t\t"   << "Remove Worklog by given ID"   << std::endl
-	           << "[q] or [exit]:"            << "\t\t\t"   << "Exiting Shell"                << std::endl
-	           << "[h] or [help]:"            << "\t\t\t"   << "View This Help"               << std::endl
+	           << "[list] or [ls]"            << "\t\t\t"     << "WorkLog List Preview"           << std::endl
+	           << "[listprev] or [listp]:"    << "\t\t"       << "Previous WorkLog List Preview"  << std::endl
+	           << "[listnext] or [listn]:"    << "\t\t"       << "Next WorkLog List Preview"      << std::endl
+	           << "[view n]:"                 << "\t\t\t"   << "WorkLog View by given ID"       << std::endl
+	           << "[edit]:"                   << "\t\t\t\t" << "WorkLog Edit"                   << std::endl
+	           << "[reedit n] or [revise n]:" << '\t'       << "Re Edit WorkLog by given ID"    << std::endl
+	           << "[remove n]:"               << "\t\t\t"   << "Remove WorkLog by given ID"     << std::endl
+	           << "[q] or [exit]:"            << "\t\t\t"   << "Exiting Shell"                  << std::endl
+	           << "[h] or [help]:"            << "\t\t\t"   << "View This Help"                 << std::endl
 	           << std::endl;
 }
 

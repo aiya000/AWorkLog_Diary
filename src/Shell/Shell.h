@@ -6,16 +6,18 @@
 class Select {
 private:
 	/* 認識するコマンドとその列挙 */
-	static constexpr int CMD_LEN = 12;
+	static constexpr int CMD_LEN = 16;
 	static const std::string CMD_LIST[CMD_LEN];
-	enum CmdEnum {
-		LIST   = 0  , LS     = 1  ,
-		VIEW   = 2  , 
-		EDIT   = 3  , WRITE  = 4  , 
-		REEDIT = 5  , REVISE = 6  , 
-		REMOVE = 7  , 
-		Q      = 8  , EXIT   = 9  , 
-		H      = 10 , HELP   = 11
+	enum CmdEnum {  // <--> CMD_LIST
+		LIST   = 0   , LS       = 1   ,
+		LISTP  = 2   , LISTPREV = 3   ,
+		LISTN  = 4   , LISTNEXT = 5   ,
+		VIEW   = 6   , 
+		EDIT   = 7   , WRITE    = 8   , 
+		REEDIT = 9   , REVISE   = 10  , 
+		REMOVE = 11  , 
+		Q      = 12  , EXIT     = 13  , 
+		H      = 14  , HELP     = 15
 	};
 
 	/* 呼び出されるのアクション管理 */
@@ -34,6 +36,8 @@ private:
 
 	/* --==- Command -==-- */
 	inline void list();
+	inline void listprev();
+	inline void listnext();
 	inline void view();
 	inline void edit();
 	inline void reedit();
