@@ -2,16 +2,16 @@
 #include "DBFailureException.h"
 #include "WorkLogData.h"
 #include <vector>
+#include <tr1/array>
 #include <sqlite3.h>
 
 class WorkLogDBHelper {
 private:
 	std::vector<WorkLogData> m_workLog;
+	std::vector<WorkLogData> m_selectedWorkLog;  // 参照渡し用
 	const std::string TABLE_NAME;
 	const std::string CREATE_TABLE;
 	sqlite3 *m_con;
-public:
-	static const int LOAD_NUM = 20;
 
 public:
 	WorkLogDBHelper() throw(DBFailureException);
@@ -29,15 +29,17 @@ private:
 	void createTable() throw(DBFailureException);
 
 	/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
-	std::vector<WorkLogData> loadWorkLogByIndex(int startIndex, int endIndex);
-	void refreshWorkLogContainer();  // -> m_workLog;
+	void loadWorkLog() throw(DBFailureException);
+	void refreshWorkLogContainer() throw(DBFailureException);  // -> m_workLog;
 
 public:
 	std::vector<WorkLogData>& getWorkLog();
-	std::vector<WorkLogData>& getWorkLogByStartIndex(int start);
-	WorkLogData& getWorkLogSearchById(int id) throw(DBFailureException);
+	std::vector<WorkLogData>& getWorkLogByRange(int start, int end);
+	WorkLogData& getWorkLogById(int id)    throw(DBFailureException);
+	std::vector<WorkLogData>& getWorkLogFindByKeyword(std::string keyword);
+	std::vector<WorkLogData>& getWorkLogSearchByRegex(std::string regex);
 
-	int getRowCount();
+	int getWorkLogSize();
 
 	void writeWorkLog(WorkLogData& values)    throw(DBFailureException);
 	void updateWorkLog(WorkLogData& values)   throw(DBFailureException);

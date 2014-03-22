@@ -114,8 +114,8 @@ diary-Main.o: Main.cpp /usr/include/stdc-predef.h \
  /usr/include/c++/4.8/bits/stl_uninitialized.h \
  /usr/include/c++/4.8/bits/stl_vector.h \
  /usr/include/c++/4.8/bits/stl_bvector.h \
- /usr/include/c++/4.8/bits/vector.tcc /usr/include/sqlite3.h \
- /usr/include/c++/4.8/tr1/array Shell/Action/../../Lib/SystemUtils.hpp
+ /usr/include/c++/4.8/bits/vector.tcc /usr/include/c++/4.8/tr1/array \
+ /usr/include/sqlite3.h Shell/Action/../../Lib/SystemUtils.hpp
 
 /usr/include/stdc-predef.h:
 
@@ -413,8 +413,8 @@ Shell/Action/../../Database/WorkLogData.h:
 
 /usr/include/c++/4.8/bits/vector.tcc:
 
-/usr/include/sqlite3.h:
-
 /usr/include/c++/4.8/tr1/array:
+
+/usr/include/sqlite3.h:
 
 Shell/Action/../../Lib/SystemUtils.hpp:

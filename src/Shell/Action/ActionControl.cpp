@@ -17,7 +17,8 @@
 #include <cassert>
 
 /* --==--==--==--==--==--==--==--==--==-- */
-ActionControl::ActionControl() : m_currentIndex(0) {}
+ActionControl::ActionControl() :
+	m_range({0, m_dbHelper.getWorkLogSize()}){}
 
 /* --==--==--==--==--==--==--==--==--==-- */
 bool ActionControl::confirm(){
@@ -57,21 +58,62 @@ void ActionControl::viewColumn(WorkLogData workLog){
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
+//通常
+//     /---- 20 ---->/----- 20 ---->/
+//recent_start   recent_end         |
+//               current_start    current_end
+//
+//そもそも個数が少ない(6)
+//     0            20
+//     /---- 20 ---->/
+//recent_start   recent_end(over)
+//
+//=> hope
+//     0             6
+//	 /----- 6 ---->/
+//recent_start   recent_end
+//current_start  current_end  -> no_step
+//
+//6 = ROW_COUNT
+//if ROW_COUNT >= 20 then STEP=6
+//                   else STEP=20
+//increment
+//m_currentIndex += 0;
+//endIndex       =  6
+
+
 void ActionControl::incrementIndex(){
-	const int LOAD_NUM = WorkLogDBHelper::LOAD_NUM;
-	m_currentIndex += LOAD_NUM;
-	// countは1から、コンテナのindexは0から。
-	// getWorkLogByStartIndex(40)で取得するのは40~59までの19個。
-	if(m_currentIndex+LOAD_NUM > m_dbHelper.getRowCount())
-		m_currentIndex = m_dbHelper.getRowCount()-LOAD_NUM+2;  // なんで+2?+1+1?
+	//const int ROW_COUNT = m_dbHelper.getWorkLog().size();
+	//const int ONCE_LOAD_NUM = 
+	//	ROW_COUNT >= 20?  20
+	//	               :  ROW_COUNT;
+
+	//m_currentIndex += ONCE_LOAD_NUM;
+	//int endIndex = m_currentIndex + ONCE_LOAD_NUM;
+	//if(endIndex > ROW_COUNT)
+	//	m_currentIndex = ;  // なんで+2?+1+1?
 }
 void ActionControl::decrementIndex(){
-	m_currentIndex -= WorkLogDBHelper::LOAD_NUM;
-	if(m_currentIndex < 0)
-		m_currentIndex = 0;
+	const int DEFAULT_ONCE_LOAD_NUM = 20;
+	m_range.start -= DEFAULT_ONCE_LOAD_NUM;
+	if(m_range.start < 0)
+		m_range.start = 0;
 }
+
+/* --==--==--==--==--==--==--==--==--==-- */
 void ActionControl::doViewWorkLogList(){
-	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogByStartIndex(m_currentIndex);
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogByRange(m_range.start, m_range.end);
+	for(int i=0; i<workLog.size(); i++)
+		this->viewColumn(workLog[i]);
+}
+
+void ActionControl::doFindFunction(std::string keyword){
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogFindByKeyword(keyword);
+	for(int i=0; i<workLog.size(); i++)
+		this->viewColumn(workLog[i]);
+}
+void ActionControl::doSearchFunction(std::string regex){
+	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogSearchByRegex(regex);
 	for(int i=0; i<workLog.size(); i++)
 		this->viewColumn(workLog[i]);
 }
@@ -79,7 +121,7 @@ void ActionControl::doViewWorkLogList(){
 void ActionControl::doViewWorkLogDetail(int id){
 	int i;
 	try{
-		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
+		WorkLogData workLog = m_dbHelper.getWorkLogById(id);
 		this->viewDetails(workLog, true);
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
@@ -107,7 +149,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 	/* 再編集モードならあらかじめテキストの内容をセットしておく */
 	if(reeditFlag){
 		try{
-			WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
+			WorkLogData workLog = m_dbHelper.getWorkLogById(id);
 			std::ofstream fout(fileList[0], std::ios::out);
 			fout << workLog.getFunction();
 			fout.close();  fout.open(fileList[1], std::ios::out);
@@ -159,7 +201,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 
 void ActionControl::doRemoveWorkLog(int id){
 	try{
-		WorkLogData workLog = m_dbHelper.getWorkLogSearchById(id);
+		WorkLogData workLog = m_dbHelper.getWorkLogById(id);
 		this->viewDetails(workLog);
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
@@ -253,7 +295,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 
 	/* ReEditモードのみで使うデータ */
 	WorkLogData *oldData;
-	if(reeditFlag)  oldData = &m_dbHelper.getWorkLogSearchById(id);
+	if(reeditFlag)  oldData = &m_dbHelper.getWorkLogById(id);
 
 	std::pair<std::string,std::string> entry[] = {
 		std::pair<std::string,std::string>("Function Type", (reeditFlag)? oldData->getFunction(): ""),

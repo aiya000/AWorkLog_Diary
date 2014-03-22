@@ -14,8 +14,10 @@ class ActionControl {
 private:
 	WorkLogDBHelper m_dbHelper;
 	
-	// listp,listnコマンドに使用
-	int m_currentIndex;
+	// listp,listnコマンドに使用(current)
+	struct {
+		int start, end;
+	} m_range;
 	/* --==--==--==--==-- */
 public:
 	ActionControl();
@@ -28,9 +30,13 @@ private:
 
 	/* --==--==--==--==-- */
 public:
-	void incrementIndex();
-	void decrementIndex();
+	void incrementIndex();  //->doViewWorkLogList()
+	void decrementIndex();  //->doViewWorkLogList()
+
+	/* --==--==--==--==-- */
 	void doViewWorkLogList();
+	void doFindFunction(std::string keyword);
+	void doSearchFunction(std::string regex);
 	void doViewWorkLogDetail(int id);
 	// 再編集モードの場合true、DBのログidを引数に指定
 	void doEditWorkLog(bool reeditFlag=false, int id=-1);

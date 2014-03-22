@@ -1,0 +1,9 @@
+Shell.cpp
+Backup function.
+
+hyper now:
+WorkLogDBHelper.cpp: change no on memory to on memory system;
+  -> finish.
+
+now:
+add function: find(keyword) search(regex)

@@ -47,8 +47,10 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		}
 	}
 
-	/* ワークログから最初の10個を初期取得 */
-	m_workLog = this->loadWorkLogByIndex(0, 20);
+	///* ワークログから最初の10個を初期取得 */
+	//m_workLog = this->loadWorkLogByIndex(0, 20);
+	/* DBをオンメモリ化 */
+	this->loadWorkLog();
 }
 
 WorkLogDBHelper::~WorkLogDBHelper(){
@@ -109,12 +111,7 @@ void WorkLogDBHelper::createTable() throw(DBFailureException){
 
 /* -=-=-=-=-=- */
 
-std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int endIndex){
-	/*
-	 * クエリをインターバルごとに読み取り
-	 * startIndex から endIndex-1 まで
-	 */
-	std::vector<WorkLogData> workLog;
+void WorkLogDBHelper::loadWorkLog() throw(DBFailureException){
 	const std::string SQL = std::string() +
 		"SELECT id, time, function, target, comment" +
 		" FROM " + TABLE_NAME +
@@ -124,17 +121,7 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 	sqlite3_reset(stmt);
 
 	int r;
-	/* startIndex-1まで読み飛ばし */// はたしてこの操作は本当にBigDataに対して通用するのか。
-	for(int i=0; i<startIndex-1; i++){
-		if(sqlite3_step(stmt) == SQLITE_DONE){
-			endIndex = i;
-			startIndex = endIndex - startIndex;
-			break;
-		}
-	}
-	for(int i=0; i<(endIndex-1)-startIndex; i++){
-		if(sqlite3_step(stmt) == SQLITE_DONE)  break;
-
+	while( (r = sqlite3_step(stmt)) == SQLITE_ROW ){
 		// sqlite3_column_textの戻り値はなぜかconst unsigned char*なのでキャスト。
 		WorkLogData rowData(
 				sqlite3_column_int(stmt, 0),  // id
@@ -143,13 +130,21 @@ std::vector<WorkLogData> WorkLogDBHelper::loadWorkLogByIndex(int startIndex, int
 				reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)), // target
 				reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4))  // comment
 				);
-		workLog.push_back(rowData);
+		m_workLog.push_back(rowData);
 	}
-	return workLog;
+	if(r != SQLITE_DONE)
+		throw DBFailureException("Select SQL Failed");
+	sqlite3_finalize(stmt);
 }
 
-void WorkLogDBHelper::refreshWorkLogContainer(){
-	m_workLog = this->loadWorkLogByIndex(0, 20);
+void WorkLogDBHelper::refreshWorkLogContainer()
+	throw(DBFailureException)
+{
+	try{
+		m_workLog = this->loadWorkLog();
+	}catch(DBFailureException e){
+		throw DBFailureException(e.what() + std::string("(Refresh Error)"));
+	}
 }
 
 
@@ -158,30 +153,38 @@ void WorkLogDBHelper::refreshWorkLogContainer(){
 std::vector<WorkLogData>& WorkLogDBHelper::getWorkLog(){
 	return m_workLog;
 }
-std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogByStartIndex(int start){
-	m_workLog = this->loadWorkLogByIndex(start, start+LOAD_NUM);
-	return m_workLog;
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogByRange(int start, int end){
+	// m_workLog.begin()+start+LOAD_NUMがm_workLog.end()を超えないことは
+	// ActionControl#incrementIndex()で保証済み
+	m_selectedWorkLog.clear();
+
+	std::copy(m_workLog.begin()+start, m_workLog.begin()+start+end,
+			std::back_inserter(m_selectedWorkLog));
+	return m_selectedWorkLog;
 }
-WorkLogData& WorkLogDBHelper::getWorkLogSearchById(int id) throw(DBFailureException){
+WorkLogData& WorkLogDBHelper::getWorkLogById(int id) throw(DBFailureException){
 	for(int i=0; i<m_workLog.size(); i++)
 		if(id == m_workLog[i].getId())
 			return m_workLog[i];
 	throw DBFailureException("Not Found Database Data, Search By ID");
 }
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogFindByKeyword(std::string keyword){
+	m_selectedWorkLog.clear();
+	for(int i=0; i<m_workLog.size(); i++)
+		if(m_workLog[i].getFunction() == keyword)
+			m_selectedWorkLog.push_back( m_workLog[i] );
+	if(m_selectedWorkLog.size() == 0)
+		throw DBFailureException("Not Found Database Data, Find By ID");
+	return m_selectedWorkLog;
+}
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogSearchByRegex(std::string regex){
+	/*TODO:stab*/
+	return m_selectedWorkLog;
+}
 
 
-int WorkLogDBHelper::getRowCount(){
-	const std::string COUNT_SQL = std::string() +
-		"SELECT count(*) " +
-		" FROM " + TABLE_NAME + ";";
-	sqlite3_stmt* stmt;
-	sqlite3_prepare(m_con, COUNT_SQL.c_str(), COUNT_SQL.size(), &stmt, nullptr);
-	sqlite3_reset(stmt);
-	sqlite3_step(stmt);
-
-	int count = sqlite3_column_int(stmt, 0);
-	sqlite3_finalize(stmt);
-	return count;
+int WorkLogDBHelper::getWorkLogSize(){
+	return m_workLog.size();
 }
 
 
@@ -204,7 +207,11 @@ void WorkLogDBHelper::writeWorkLog(WorkLogData& values) throw(DBFailureException
 		if(i > 1000)  throw DBFailureException("Insert SQL TimeOut");
 	sqlite3_finalize(stmt);
 
-	this->refreshWorkLogContainer();
+	try{
+		this->refreshWorkLogContainer();
+	}catch(DBFailureException e){
+		throw e;
+	}
 }
 
 void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureException){
@@ -227,7 +234,11 @@ void WorkLogDBHelper::updateWorkLog(WorkLogData& values) throw(DBFailureExceptio
 		if(i > 1000)  throw DBFailureException("Update SQL TimeOut");
 	sqlite3_finalize(stmt);
 
-	this->refreshWorkLogContainer();
+	try{
+		this->refreshWorkLogContainer();
+	}catch(DBFailureException e){
+		throw e;
+	}
 }
 
 void WorkLogDBHelper::removeWorkLog(int id) throw(DBFailureException){
@@ -246,7 +257,11 @@ void WorkLogDBHelper::removeWorkLog(int id) throw(DBFailureException){
 		if(i > 1000)  throw DBFailureException("Delete SQL TimeOut");
 	sqlite3_finalize(stmt);
 
-	this->refreshWorkLogContainer();
+	try{
+		this->refreshWorkLogContainer();
+	}catch(DBFailureException e){
+		throw e;
+	}
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
