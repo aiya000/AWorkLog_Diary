@@ -199,8 +199,12 @@ void ActionControl::doRemoveWorkLog(int id){
 	}
 
 	std::cout << ">> Remove This WorkLog." << std::endl;
-	if(this->confirm())
-		m_dbHelper.removeWorkLog(id);
+	try{
+		if(this->confirm())
+			m_dbHelper.removeWorkLog(id);
+	}catch(DBFailureException e){
+		std::cerr << e.what() << std::endl;
+	}
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
