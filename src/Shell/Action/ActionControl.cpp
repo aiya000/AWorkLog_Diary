@@ -66,7 +66,7 @@ void ActionControl::viewColumn(WorkLogData workLog){
 void ActionControl::incrementRange(){
 	const int ROW_COUNT = m_dbHelper.getWorkLogSize();
 	const int DEFAULT  = 20;
-	const int LOAD_NUM =  // under 20 case
+	const int LOAD_NUM =  // data under 20 case
 		ROW_COUNT >= DEFAULT?  DEFAULT
 		                    :        0;
 
@@ -237,9 +237,7 @@ std::tr1::array<std::string,3> ActionControl::editDetails(/*{{{*/
 					detail << line;
 					if(line == "")  throw DBFailureException("Text is Empty");
 				}else{
-					alib::unsetStreamDelimiterSpace(fin);
-					alib::unsetStreamDelimiterSpace(detail);
-					while( fin >> line )
+					while( std::getline(fin, line) )
 						detail << line << std::endl;
 					if(line == "")
 						std::cout << "Warn>> Comment is Empty" << std::endl;
@@ -331,9 +329,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 				std::string line;
 
 				try{
-					alib::unsetStreamDelimiterSpace(fin);
-					alib::unsetStreamDelimiterSpace(detail);
-					while( fin >> line )
+					while( std::getline(fin, line) )
 						detail << line << std::endl;
 					if(line == "")
 						std::cout << "Warn>> Comment is Empty" << std::endl;

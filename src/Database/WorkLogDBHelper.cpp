@@ -140,6 +140,7 @@ void WorkLogDBHelper::refreshWorkLogContainer()
 {
 	try{
 		this->loadWorkLog();
+		this->getWorkLogByRange(0, 20);
 	}catch(DBFailureException e){
 		throw DBFailureException(e.what() + std::string("(Refresh Error)"));
 	}

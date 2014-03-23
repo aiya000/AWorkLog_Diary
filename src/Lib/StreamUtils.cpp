@@ -1,18 +1,17 @@
 #include "StreamUtils.hpp"
-#include <iostream>
 #include <locale>
 
 namespace alib {
-	void unsetStreamDelimiterSpace(std::istream& in){
-		struct DelimiterSpace : std::ctype<char> {
-			mask rc[table_size];
-			DelimiterSpace() : std::ctype<char>([&](){
-				rc['\n'] = std::ctype_base::space;
-				return &rc[0];
-			}()){}
-		};
-		in.imbue( std::locale(in.getloc(), new DelimiterSpace()) );
-	}
+	//void unsetStreamDelimiterSpace(std::istream& in){
+	//	struct DelimiterSpace : std::ctype<char> {
+	//		mask rc[table_size];
+	//		DelimiterSpace() : std::ctype<char>([&](){
+	//			rc['\n'] = std::ctype_base::space;
+	//			return &rc[0];
+	//		}()){}
+	//	};
+	//	in.imbue( std::locale(in.getloc(), new DelimiterSpace()) );
+	//}
 }
 
 //#include <sstream>
