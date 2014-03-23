@@ -30,8 +30,8 @@ private:
 
 	/* --==--==--==--==-- */
 public:
-	void incrementIndex();  //->doViewWorkLogList()
-	void decrementIndex();  //->doViewWorkLogList()
+	void incrementRange();  //rel->doViewWorkLogList()
+	void decrementRange();  //rel->doViewWorkLogList()
 
 	/* --==--==--==--==-- */
 	void doViewWorkLogList();

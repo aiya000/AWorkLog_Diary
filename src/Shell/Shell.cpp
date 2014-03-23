@@ -113,11 +113,11 @@ inline void Shell::list(){
 	action.doViewWorkLogList();
 }
 inline void Shell::listprev(){
-	action.decrementIndex();
+	action.decrementRange();
 	action.doViewWorkLogList();
 }
 inline void Shell::listnext(){
-	action.incrementIndex();
+	action.incrementRange();
 	action.doViewWorkLogList();
 }
 

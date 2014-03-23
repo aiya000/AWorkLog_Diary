@@ -18,7 +18,13 @@
 
 /* --==--==--==--==--==--==--==--==--==-- */
 ActionControl::ActionControl() :
-	m_range({0, m_dbHelper.getWorkLogSize()}){}
+	m_range({0, [&](){
+		const int LOG_SIZE = m_dbHelper.getWorkLogSize();
+		const int LOAD_RANGE = 20;
+		return
+		LOG_SIZE >= LOAD_RANGE?  LOAD_RANGE
+		                      :  LOG_SIZE;
+	}()}){}
 
 /* --==--==--==--==--==--==--==--==--==-- */
 bool ActionControl::confirm(){
@@ -57,47 +63,31 @@ void ActionControl::viewColumn(WorkLogData workLog){
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
+void ActionControl::incrementRange(){
+	const int ROW_COUNT = m_dbHelper.getWorkLogSize();
+	const int DEFAULT  = 20;
+	const int LOAD_NUM =  // under 20 case
+		ROW_COUNT >= DEFAULT?  DEFAULT
+		                    :        0;
 
-//通常
-//     /---- 20 ---->/----- 20 ---->/
-//recent_start   recent_end         |
-//               current_start    current_end
-//
-//そもそも個数が少ない(6)
-//     0            20
-//     /---- 20 ---->/
-//recent_start   recent_end(over)
-//
-//=> hope
-//     0             6
-//	 /----- 6 ---->/
-//recent_start   recent_end
-//current_start  current_end  -> no_step
-//
-//6 = ROW_COUNT
-//if ROW_COUNT >= 20 then STEP=6
-//                   else STEP=20
-//increment
-//m_currentIndex += 0;
-//endIndex       =  6
-
-
-void ActionControl::incrementIndex(){
-	//const int ROW_COUNT = m_dbHelper.getWorkLog().size();
-	//const int ONCE_LOAD_NUM = 
-	//	ROW_COUNT >= 20?  20
-	//	               :  ROW_COUNT;
-
-	//m_currentIndex += ONCE_LOAD_NUM;
-	//int endIndex = m_currentIndex + ONCE_LOAD_NUM;
-	//if(endIndex > ROW_COUNT)
-	//	m_currentIndex = ;  // なんで+2?+1+1?
+	m_range.start += LOAD_NUM;
+	m_range.end   += LOAD_NUM;
+	if(m_range.end > ROW_COUNT){
+		m_range.end   = ROW_COUNT;
+		m_range.start = ROW_COUNT - DEFAULT;
+	}
 }
-void ActionControl::decrementIndex(){
-	const int DEFAULT_ONCE_LOAD_NUM = 20;
-	m_range.start -= DEFAULT_ONCE_LOAD_NUM;
-	if(m_range.start < 0)
+void ActionControl::decrementRange(){
+	const int ROW_COUNT = m_dbHelper.getWorkLogSize();
+	const int LOAD_NUM = 20;
+	m_range.start -= LOAD_NUM;
+	m_range.end   -= LOAD_NUM;
+	if(m_range.start < 0){
 		m_range.start = 0;
+		m_range.end   =
+			ROW_COUNT >= 20?  20
+			               :  ROW_COUNT;
+	}
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */

@@ -8,7 +8,7 @@
 class WorkLogDBHelper {
 private:
 	std::vector<WorkLogData> m_workLog;
-	std::vector<WorkLogData> m_selectedWorkLog;  // 参照渡し用
+	std::vector<WorkLogData> m_selectedWorkLog;  // 参照渡し用,,,This have a part of m_workLog!
 	const std::string TABLE_NAME;
 	const std::string CREATE_TABLE;
 	sqlite3 *m_con;

@@ -47,8 +47,6 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		}
 	}
 
-	///* ワークログから最初の10個を初期取得 */
-	//m_workLog = this->loadWorkLogByIndex(0, 20);
 	/* DBをオンメモリ化 */
 	this->loadWorkLog();
 }
@@ -141,7 +139,7 @@ void WorkLogDBHelper::refreshWorkLogContainer()
 	throw(DBFailureException)
 {
 	try{
-		m_workLog = this->loadWorkLog();
+		this->loadWorkLog();
 	}catch(DBFailureException e){
 		throw DBFailureException(e.what() + std::string("(Refresh Error)"));
 	}
@@ -158,7 +156,7 @@ std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogByRange(int start, int end)
 	// ActionControl#incrementIndex()で保証済み
 	m_selectedWorkLog.clear();
 
-	std::copy(m_workLog.begin()+start, m_workLog.begin()+start+end,
+	std::copy(m_workLog.begin()+start, m_workLog.begin()+end,
 			std::back_inserter(m_selectedWorkLog));
 	return m_selectedWorkLog;
 }
