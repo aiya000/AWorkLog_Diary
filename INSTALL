@@ -1,0 +1,4 @@
+This Program's Dependences.
+
+g++(C++11)
+libsqlite3-dev
