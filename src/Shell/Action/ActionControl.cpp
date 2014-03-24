@@ -58,8 +58,7 @@ void ActionControl::viewColumn(WorkLogData workLog){
 	          << workLog.getId()                       << "\t|"
 	          << alib::timeToString(workLog.getTime()) << "\t|"
 	          << workLog.getFunction()                 << "\t|"
-	          << workLog.getTarget()                   << "\t|"
-	          << std::endl;
+	          << workLog.getTarget()                   << std::endl;
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
@@ -98,24 +97,37 @@ void ActionControl::doViewWorkLogList(){
 }
 
 void ActionControl::doFindFunction(std::string keyword){
-	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogFindByKeyword(keyword);
-	for(int i=0; i<workLog.size(); i++)
-		this->viewColumn(workLog[i]);
+	std::vector<WorkLogData> *workLog;
+	try{
+		workLog = &m_dbHelper.getWorkLogFindByKeyword(keyword);
+	}catch(DBFailureException e){
+		std::cout << ">> Not Found WorkLog Keyword: " << keyword << std::endl;
+		return;
+	}
+	for(int i=0; i<workLog->size(); i++)
+		this->viewColumn( (*workLog)[i] );
 }
 void ActionControl::doSearchFunction(std::string regex){
-	std::vector<WorkLogData> workLog = m_dbHelper.getWorkLogSearchByRegex(regex);
-	for(int i=0; i<workLog.size(); i++)
-		this->viewColumn(workLog[i]);
+	std::vector<WorkLogData> *workLog;
+	try{
+		workLog = &m_dbHelper.getWorkLogSearchByRegex(regex);
+	}catch(DBFailureException e){
+		std::cout << ">> Not Found WorkLog Regex: \"" << regex << "\"" << std::endl;
+		return;
+	}
+	for(int i=0; i<workLog->size(); i++)
+		this->viewColumn( (*workLog)[i] );
 }
 
 void ActionControl::doViewWorkLogDetail(int id){
-	int i;
+	WorkLogData *workLog;
 	try{
-		WorkLogData workLog = m_dbHelper.getWorkLogById(id);
-		this->viewDetails(workLog, true);
+		workLog = &m_dbHelper.getWorkLogById(id);
 	}catch(DBFailureException e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
+		return;
 	}
+	this->viewDetails(*workLog, true);
 }
 
 #pragma GCC diagnostic push
@@ -303,7 +315,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 				std::cout << "Do not change by Enter key" << std::endl;
 			std::cout << entry[i].first;
 			if(reeditFlag)
-				std::cout << "(default " << entry[i].second << ')';
+				std::cout << "(default [" << entry[i].second << "])";
 			std::cout << ">> ";
 
 			std::string input;

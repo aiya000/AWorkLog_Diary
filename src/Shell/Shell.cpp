@@ -105,6 +105,10 @@ inline T Shell::getInput(std::string want){
 	std::cout << "Please Input " + want + " (abort: 0)" << std::endl << ">> ";
 	T input;
 	std::cin >> input;
+	if(!std::cin.good()){
+		std::cin.clear();
+		std::cin.ignore();
+	}
 	return input;
 }
 
@@ -175,7 +179,7 @@ inline void Shell::help(){
 	          << "[listprev] or [listp]:"    << "\t\t"     << "Preview WorkLog List Previous page"          << std::endl
 	          << "[listnext] or [listn]:"    << "\t\t"     << "Preview WorkLog List Next page"              << std::endl
 	          << "[find s]:"                 << "\t\t\t"   << "Find Function by keyword(Don't Using Regex)" << std::endl
-	          << "[search s]:"               << "\t\t"     << "Search Function by keyword(Using Regex)"     << std::endl
+	          << "[search s]:"               << "\t\t"     << "Search LogData by keyword(Using Regex)"      << std::endl
 	          << "[view n]:"                 << "\t\t\t"   << "View WorkLog by given ID"                    << std::endl
 	          << "[edit]:"                   << "\t\t\t\t" << "Edit WorkLog"                                << std::endl
 	          << "[reedit n] or [revise n]:" << '\t'       << "Re Edit WorkLog by given ID"                 << std::endl

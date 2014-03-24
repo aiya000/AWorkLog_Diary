@@ -36,8 +36,10 @@ public:
 	std::vector<WorkLogData>& getWorkLog();
 	std::vector<WorkLogData>& getWorkLogByRange(int start, int end);
 	WorkLogData& getWorkLogById(int id)    throw(DBFailureException);
-	std::vector<WorkLogData>& getWorkLogFindByKeyword(std::string keyword);
-	std::vector<WorkLogData>& getWorkLogSearchByRegex(std::string regex);
+	std::vector<WorkLogData>& getWorkLogFindByKeyword(std::string keyword)
+		throw(DBFailureException);
+	std::vector<WorkLogData>& getWorkLogSearchByRegex(std::string regex)
+		throw(DBFailureException);
 
 	int getWorkLogSize();
 

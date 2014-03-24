@@ -140,7 +140,7 @@ void WorkLogDBHelper::refreshWorkLogContainer()
 {
 	try{
 		this->loadWorkLog();
-		this->getWorkLogByRange(0, 20);
+		this->getWorkLogByRange(0, this->getWorkLogSize());
 	}catch(DBFailureException e){
 		throw DBFailureException(e.what() + std::string("(Refresh Error)"));
 	}
@@ -167,17 +167,26 @@ WorkLogData& WorkLogDBHelper::getWorkLogById(int id) throw(DBFailureException){
 			return m_workLog[i];
 	throw DBFailureException("Not Found Database Data, Search By ID");
 }
-std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogFindByKeyword(std::string keyword){
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogFindByKeyword(std::string keyword) throw(DBFailureException){
 	m_selectedWorkLog.clear();
 	for(int i=0; i<m_workLog.size(); i++)
 		if(m_workLog[i].getFunction() == keyword)
 			m_selectedWorkLog.push_back( m_workLog[i] );
 	if(m_selectedWorkLog.size() == 0)
-		throw DBFailureException("Not Found Database Data, Find By ID");
+		throw DBFailureException("Not Found Database Data, Find By Keyword");
 	return m_selectedWorkLog;
 }
-std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogSearchByRegex(std::string regex){
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogSearchByRegex(std::string regex) throw(DBFailureException){
 	/*TODO:stab*/
+	/* これを正規表現で */
+	m_selectedWorkLog.clear();
+	for(WorkLogData data : m_workLog)
+		if(data.getFunction() == regex ||
+		   data.getTarget()   == regex ||
+		   data.getComment()  == regex  )
+			m_selectedWorkLog.push_back(data);
+	if(m_selectedWorkLog.size() == 0)
+		throw DBFailureException("Not Found Database Data, Search By Regex");
 	return m_selectedWorkLog;
 }
 
