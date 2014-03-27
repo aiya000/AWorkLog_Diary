@@ -4,6 +4,8 @@ Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
 Lib/Convert.cpp                 \
 Lib/Convert.hpp                 \
+Lib/File.cpp                    \
+Lib/File.hpp                    \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
 Lib/StreamUtils.hpp             \

@@ -1,3 +1,13 @@
 2014-03-22
 Changed [DB no on memory] to [on memory Database System].
 All Operation goes through On memory Database.
+
+2014-03-26
+Backup command and function added.
+(to $HOME/.aworklog_diary/aworklog_diary.db.`date`)
+
+2014-03-27
+Find function upgrade !
+It corresponded function format["Install, Modify"].
+and Regex Search function (search function) added.
+Its command is a "find" and "search".

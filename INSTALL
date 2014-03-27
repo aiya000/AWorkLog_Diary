@@ -1,4 +1,4 @@
 This Program's Dependences.
 
-g++(C++11)
+gcc version 4.9+ or can use <regex> compiler.
 libsqlite3-dev

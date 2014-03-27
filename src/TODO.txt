@@ -1,9 +1,10 @@
-Shell.cpp
-Backup function.
+add function: search(regex)
 
-hyper now:
-WorkLogDBHelper.cpp: change no on memory to on memory system;
-  -> finish.
+面倒くさくてやめてるやつ:
+バックアップリストアップ(ls_backup)
+レストア(restore)
+とかの構造(表示方法、実行方法云々)。
 
-now:
-add function: find(keyword) search(regex)
+find functionを[Install, Modify]のような形で
+InstallもしくはModifyどちらでもヒットするようにする。
+split','してtrim。

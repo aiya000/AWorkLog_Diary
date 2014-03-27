@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <cassert>
+#include <memory>
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
@@ -169,21 +170,33 @@ WorkLogData& WorkLogDBHelper::getWorkLogById(int id) throw(DBFailureException){
 }
 std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogFindByKeyword(std::string keyword) throw(DBFailureException){
 	m_selectedWorkLog.clear();
-	for(int i=0; i<m_workLog.size(); i++)
-		if(m_workLog[i].getFunction() == keyword)
+	for(int i=0; i<m_workLog.size(); i++){
+		std::vector<std::string> selection;
+		for(std::string& trim : alib::split(m_workLog[i].getFunction(), ','))
+			selection.push_back( alib::trim(trim) );
+
+		for(std::string& select : selection)  if(select == keyword){
 			m_selectedWorkLog.push_back( m_workLog[i] );
+			break;
+		}
+	}
 	if(m_selectedWorkLog.size() == 0)
 		throw DBFailureException("Not Found Database Data, Find By Keyword");
 	return m_selectedWorkLog;
 }
-std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogSearchByRegex(std::string regex) throw(DBFailureException){
-	/*TODO:stab*/
-	/* これを正規表現で */
+std::vector<WorkLogData>& WorkLogDBHelper::getWorkLogSearchByRegex(std::string regex) throw(DBFailureException, std::regex_error){
+	std::unique_ptr<std::regex> searchEx;
+	try{
+		searchEx.reset(new std::regex(regex));
+	}catch(std::regex_error e){
+		throw e;
+	}
+
 	m_selectedWorkLog.clear();
 	for(WorkLogData data : m_workLog)
-		if(data.getFunction() == regex ||
-		   data.getTarget()   == regex ||
-		   data.getComment()  == regex  )
+		if(std::regex_search(data.getFunction().c_str(), *searchEx) ||
+		   std::regex_search(data.getTarget().c_str(),   *searchEx) ||
+		   std::regex_search(data.getComment().c_str(),  *searchEx))
 			m_selectedWorkLog.push_back(data);
 	if(m_selectedWorkLog.size() == 0)
 		throw DBFailureException("Not Found Database Data, Search By Regex");

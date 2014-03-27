@@ -4,18 +4,22 @@
 #include "../Lib/StringUtils.hpp"
 #include <cassert>
 
+// This synchronize order with enum CmdEnum.
 const std::string Shell::CMD_LIST[] = {
-	"list"   , "ls"       , 
-	"listp"  , "listprev" , 
-	"listn"  , "listnext" , 
-	"find"   ,
-	"search" ,
-	"view"   , 
-	"edit"   , "write"    , 
-	"reedit" , "revise"   , 
-	"remove" , 
-	"q"      , "exit"     , 
-	"h"      , "help"
+	"list"      , "ls"       , 
+	"listp"     , "listprev" , 
+	"listn"     , "listnext" , 
+	"find"      ,
+	"search"    ,
+	"view"      , 
+	"edit"      , "write"    , 
+	"reedit"    , "revise"   , 
+	"remove"    , 
+	"backup"    ,
+	"restore"   ,
+	"ls_backup" ,
+	"q"         , "exit"     , 
+	"h"         , "help"
 };
 
 /* --==--==--==--== Run ==--===-==--==-- */
@@ -77,20 +81,25 @@ bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
 		case REVISE:
 			this->reedit();
 			break;
-
 		case REMOVE:
 			this->remove();
 			break;
-
+		case BACKUP:
+			this->backup();
+			break;
+		case RESTORE:
+			this->restore();
+			break;
+		case LS_BACKUP:
+			this->ls_backup();
+			break;
 		case Q:
 		case EXIT:
 			return false;
-
 		case H:
 		case HELP:
 			this->help();
 			break;
-
 		default:
 			assert(!"Shell#launch -> invalid case");
 	}
@@ -130,7 +139,7 @@ inline void Shell::find(){
 	if(keyword != "0")
 		action.doFindFunction(keyword);
 	else
-		std::cout << "Aborted" << std::endl;
+		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
 inline void Shell::search(){
@@ -138,7 +147,7 @@ inline void Shell::search(){
 	if(regex != "0")
 		action.doSearchFunction(regex);
 	else
-		std::cout << "Aborted" << std::endl;
+		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
 
@@ -147,7 +156,7 @@ inline void Shell::view(){
 	if(selectId != 0)
 		action.doViewWorkLogDetail(selectId);
 	else
-		std::cout << "Aborted" << std::endl;
+		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
 
@@ -160,7 +169,7 @@ inline void Shell::reedit(){
 	if(selectId != 0)
 		action.doEditWorkLog(true, selectId);
 	else
-		std::cout << "Aborted" << std::endl;
+		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
 
@@ -169,8 +178,29 @@ inline void Shell::remove(){
 	if(selectId != 0)
 		action.doRemoveWorkLog(selectId);
 	else
-		std::cout << "Aborted" << std::endl;
+		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
+}
+
+inline void Shell::backup(){
+	while(true){
+		char yon = this->getInput<char>("y/n");
+		if(yon == 'y'){
+			action.doBackupWorkLogFile();
+			break;
+		}else if(yon == 'n'){
+			std::cout << ">> Backup Cancelled." << std::endl;
+			break;
+		}
+	}
+}
+
+inline void Shell::restore(){
+	action.doRestoreWorkLogFile();
+}
+
+inline void Shell::ls_backup(){
+	action.doLsBackupWorkLogFile();
 }
 
 inline void Shell::help(){

@@ -4,6 +4,7 @@
 #include <vector>
 #include <tr1/array>
 #include <sqlite3.h>
+#include <regex>
 
 class WorkLogDBHelper {
 private:
@@ -39,7 +40,7 @@ public:
 	std::vector<WorkLogData>& getWorkLogFindByKeyword(std::string keyword)
 		throw(DBFailureException);
 	std::vector<WorkLogData>& getWorkLogSearchByRegex(std::string regex)
-		throw(DBFailureException);
+		throw(DBFailureException, std::regex_error);
 
 	int getWorkLogSize();
 

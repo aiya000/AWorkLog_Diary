@@ -91,10 +91,10 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_diary_OBJECTS = diary-ConfigLoader.$(OBJEXT) \
-	diary-Convert.$(OBJEXT) diary-StringUtils.$(OBJEXT) \
-	diary-StreamUtils.$(OBJEXT) diary-SystemUtils.$(OBJEXT) \
-	diary-ActionControl.$(OBJEXT) diary-Shell.$(OBJEXT) \
-	diary-WorkLogDBHelper.$(OBJEXT) \
+	diary-Convert.$(OBJEXT) diary-File.$(OBJEXT) \
+	diary-StringUtils.$(OBJEXT) diary-StreamUtils.$(OBJEXT) \
+	diary-SystemUtils.$(OBJEXT) diary-ActionControl.$(OBJEXT) \
+	diary-Shell.$(OBJEXT) diary-WorkLogDBHelper.$(OBJEXT) \
 	diary-DBFailureException.$(OBJEXT) diary-WorkLogData.$(OBJEXT) \
 	diary-Main.$(OBJEXT)
 diary_OBJECTS = $(am_diary_OBJECTS)
@@ -269,6 +269,8 @@ Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
 Lib/Convert.cpp                 \
 Lib/Convert.hpp                 \
+Lib/File.cpp                    \
+Lib/File.hpp                    \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
 Lib/StreamUtils.hpp             \
@@ -381,6 +383,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-ConfigLoader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-Convert.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-DBFailureException.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-File.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-Main.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-Shell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-StreamUtils.Po@am__quote@
@@ -430,6 +433,20 @@ diary-Convert.obj: Lib/Convert.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lib/Convert.cpp' object='diary-Convert.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Convert.obj `if test -f 'Lib/Convert.cpp'; then $(CYGPATH_W) 'Lib/Convert.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/Convert.cpp'; fi`
+
+diary-File.o: Lib/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-File.o -MD -MP -MF $(DEPDIR)/diary-File.Tpo -c -o diary-File.o `test -f 'Lib/File.cpp' || echo '$(srcdir)/'`Lib/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-File.Tpo $(DEPDIR)/diary-File.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lib/File.cpp' object='diary-File.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-File.o `test -f 'Lib/File.cpp' || echo '$(srcdir)/'`Lib/File.cpp
+
+diary-File.obj: Lib/File.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-File.obj -MD -MP -MF $(DEPDIR)/diary-File.Tpo -c -o diary-File.obj `if test -f 'Lib/File.cpp'; then $(CYGPATH_W) 'Lib/File.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/File.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-File.Tpo $(DEPDIR)/diary-File.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Lib/File.cpp' object='diary-File.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-File.obj `if test -f 'Lib/File.cpp'; then $(CYGPATH_W) 'Lib/File.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/File.cpp'; fi`
 
 diary-StringUtils.o: Lib/StringUtils.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-StringUtils.o -MD -MP -MF $(DEPDIR)/diary-StringUtils.Tpo -c -o diary-StringUtils.o `test -f 'Lib/StringUtils.cpp' || echo '$(srcdir)/'`Lib/StringUtils.cpp

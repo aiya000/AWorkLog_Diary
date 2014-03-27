@@ -15,6 +15,9 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cassert>
+#include <regex>
+#include "../../Config/ConfigLoader.h"
+#include "../../Lib/File.hpp"
 
 /* --==--==--==--==--==--==--==--==--==-- */
 ActionControl::ActionControl() :
@@ -111,6 +114,8 @@ void ActionControl::doSearchFunction(std::string regex){
 	std::vector<WorkLogData> *workLog;
 	try{
 		workLog = &m_dbHelper.getWorkLogSearchByRegex(regex);
+	}catch(std::regex_error e){
+		std::cout << ">> Not an valid Regex: \"" << regex << "\"" << std::endl;
 	}catch(DBFailureException e){
 		std::cout << ">> Not Found WorkLog Regex: \"" << regex << "\"" << std::endl;
 		return;
@@ -217,6 +222,26 @@ void ActionControl::doRemoveWorkLog(int id){
 	}catch(DBFailureException e){
 		std::cerr << e.what() << std::endl;
 	}
+}
+
+void ActionControl::doBackupWorkLogFile(){
+	ConfigLoader config;
+	std::ifstream fin(config.getDbPath(), std::ios::in|std::ios::binary);
+	std::string backupName = alib::timeToString(time(nullptr), "%Y-%m-%d");
+	std::ofstream fout(config.getDbPath()+"."+backupName, std::ios::out|std::ios::binary);
+	fout << fin.rdbuf();
+	if( !fin || !fout )
+		std::cerr << ">> Database Backup Failed." << std::endl;
+	else
+		std::cout << ">> Database Backed up." << std::endl;
+}
+
+void ActionControl::doRestoreWorkLogFile(){
+}
+
+void ActionControl::doLsBackupWorkLogFile(){
+	//ConfigLoader config;
+	//alib::Directory dir(config.getWorkDirPath());
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */

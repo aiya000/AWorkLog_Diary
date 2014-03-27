@@ -41,6 +41,9 @@ public:
 	// 再編集モードの場合true、DBのログidを引数に指定
 	void doEditWorkLog(bool reeditFlag=false, int id=-1);
 	void doRemoveWorkLog(int id);
+	void doBackupWorkLogFile();
+	void doRestoreWorkLogFile();
+	void doLsBackupWorkLogFile();
 
 	/* --==--==--==--==-- */
 
