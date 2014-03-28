@@ -11,3 +11,7 @@ Find function upgrade !
 It corresponded function format["Install, Modify"].
 and Regex Search function (search function) added.
 Its command is a "find" and "search".
+
+2014-03-27
+Shell's command line argument half corresponded.
+exam: [$ diary list] to list view.

@@ -2,6 +2,7 @@
 #include "../../Database/WorkLogDBHelper.h"
 #include "../../Database/WorkLogData.h"
 #include <tr1/array>
+#include <stdexcept>
 #include "../../Lib/SystemUtils.hpp"
 
 /*
@@ -48,20 +49,24 @@ public:
 	/* --==--==--==--==-- */
 
 private:
+	// <- doEditWorkLog & editDetails
+	struct OperationInterruptedException : public std::domain_error {
+		OperationInterruptedException(std::string str);
+	};
 	// doEditWorkLog->
 	std::tr1::array<std::string,3>
 		editDetails(
 			const std::string& funcPath,
 			const std::string& tarPath,
 			const std::string& comPath)
-		throw(alib::SystemCommandCallException, alib::SystemInterruptedException);
+		throw(alib::SystemCommandCallException, OperationInterruptedException);
 	// doEditWorkLog->
 	std::tr1::array<std::string,3>
 		editDetailsUseStdin(
 			const std::string& comPath,
 			bool reeditFlag,
 			int  id)
-		throw(alib::SystemCommandCallException, alib::SystemInterruptedException);
+		throw(alib::SystemCommandCallException, OperationInterruptedException);
 
 	/* --==--==--==--==-- */
 };

@@ -1,4 +1,5 @@
-This Program's Dependences.
+This Program is [diary] command.
 
-gcc version 4.9+ or can use <regex> compiler.
-libsqlite3-dev
+This Program's Dependences.
+: gcc version 4.9+ or can use <regex> compiler.
+: libsqlite3-dev

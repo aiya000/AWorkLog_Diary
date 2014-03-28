@@ -170,8 +170,15 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 	}
 
 	/* 処理、対象、コメントを読み込み */
-	std::tr1::array<std::string,3> texts = 
-		this->editDetailsUseStdin(fileList[2], reeditFlag, id);
+	std::tr1::array<std::string,3> texts;
+	try{
+		texts = this->editDetailsUseStdin(fileList[2], reeditFlag, id);
+	}catch(OperationInterruptedException e){
+		std::cout << e.what() << std::endl;
+		for(std::string file : fileList)
+			std::remove(file.c_str());
+		return;
+	}
 		//this->editDetails(fileList[0], fileList[1], fileList[2]);
 
 	/* ファイル削除 */
@@ -245,11 +252,13 @@ void ActionControl::doLsBackupWorkLogFile(){
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
+ActionControl::OperationInterruptedException::OperationInterruptedException(std::string cause) :
+	std::domain_error(cause){}
 std::tr1::array<std::string,3> ActionControl::editDetails(/*{{{*/
 		const std::string& funcPath,
 		const std::string& tarPath,
 		const std::string& comPath)
-	throw(alib::SystemCommandCallException, alib::SystemInterruptedException)
+	throw(alib::SystemCommandCallException, OperationInterruptedException)
 {
 	std::tr1::array<std::string,3> details;
 	constexpr int FILE_NUM = 3;
@@ -298,7 +307,7 @@ std::tr1::array<std::string,3> ActionControl::editDetails(/*{{{*/
 							getFlag = true;
 							break;
 						case 'a':
-							throw alib::SystemInterruptedException(">> Operation Aborted");
+							throw OperationInterruptedException(">> Operation Aborted");
 						default:
 							std::cout << ">> Please [c] or [r] or [a]." << std::endl;
 							break;
@@ -317,7 +326,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 		const std::string& comPath,
 		bool reeditFlag,
 		int  id)
-	throw(alib::SystemCommandCallException, alib::SystemInterruptedException)
+	throw(alib::SystemCommandCallException, OperationInterruptedException)
 {
 	std::tr1::array<std::string,3> details;
 	constexpr int FILE_NUM = 3;
@@ -331,6 +340,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 		std::pair<std::string,std::string>("Target Name",   (reeditFlag)? oldData->getTarget():   "")
 	};
 
+	if(!std::cin.eof())
 	std::cin.ignore();  // flush (<- getline)
 	for(int i=0; i<FILE_NUM; i++){
 		std::stringstream detail;
@@ -338,16 +348,19 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 		if(i != 2){
 			if(reeditFlag)
 				std::cout << "Do not change by Enter key" << std::endl;
+			std::cout << ">> abort(0)" << std::endl;
 			std::cout << entry[i].first;
 			if(reeditFlag)
 				std::cout << "(default [" << entry[i].second << "])";
-			std::cout << ">> ";
 
 			std::string input;
 			bool inputFlag = false;
 			while(!inputFlag){
+				std::cout << ">> ";
 				std::getline(std::cin, input);
-				if(input != ""){
+				if(input == "0"){
+					throw OperationInterruptedException(">> Operation Aborted");
+				}else if(input != ""){
 					inputFlag = true;
 				}else if(reeditFlag && input == ""){
 					input = entry[i].second;
@@ -369,35 +382,10 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 				std::ifstream fin(comPath, std::ios::in);
 				std::string line;
 
-				try{
-					while( std::getline(fin, line) )
-						detail << line << std::endl;
-					if(line == "")
-						std::cout << "Warn>> Comment is Empty" << std::endl;
-				}catch(DBFailureException e){
-					std::cout << ">> " << e.what() << std::endl;
-					std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
-
-					bool getFlag = false;
-					char a;
-					while(!getFlag){
-						std::cin >> a;
-						switch(a){
-							case 'r':
-								i--;
-							case 'c':
-								getFlag = true;
-								break;
-							case 'a':
-								throw alib::SystemInterruptedException(">> Operation Aborted");
-							default:
-								std::cout << ">> Please [c] or [r] or [a]." << std::endl;
-								break;
-						}
-						continue;
-					}
-				}
-
+				while( std::getline(fin, line) )
+					detail << line << std::endl;
+				if(line == "")
+					std::cout << "Warn>> Comment is Empty" << std::endl;
 			}
 		}
 

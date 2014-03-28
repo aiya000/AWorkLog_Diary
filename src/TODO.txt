@@ -1,10 +1,9 @@
-add function: search(regex)
-
 面倒くさくてやめてるやつ:
 バックアップリストアップ(ls_backup)
 レストア(restore)
 とかの構造(表示方法、実行方法云々)。
 
-find functionを[Install, Modify]のような形で
-InstallもしくはModifyどちらでもヒットするようにする。
-split','してtrim。
+現状searchはcommentも含めているけど、
+デフォルトで含めない、追加オプションで含めることができる…にしたい。
+これができるならばview等の引数を持つものを
+コマンドライン引数として受け取れることになるのでそっちもするかもしれない。
