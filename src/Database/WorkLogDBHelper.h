@@ -15,7 +15,8 @@ private:
 	sqlite3 *m_con;
 
 public:
-	WorkLogDBHelper() throw(DBFailureException);
+	WorkLogDBHelper()   throw(DBFailureException);
+	void reset() throw(DBFailureException);
 	~WorkLogDBHelper();
 	void close();
 

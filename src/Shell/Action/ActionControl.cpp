@@ -16,8 +16,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <regex>
-#include "../../Config/ConfigLoader.h"
-#include "../../Lib/File.hpp"
+#include "../../Lib/FileSystem.hpp"
 
 /* --==--==--==--==--==--==--==--==--==-- */
 ActionControl::ActionControl() :
@@ -232,23 +231,28 @@ void ActionControl::doRemoveWorkLog(int id){
 }
 
 void ActionControl::doBackupWorkLogFile(){
-	ConfigLoader config;
-	std::ifstream fin(config.getDbPath(), std::ios::in|std::ios::binary);
-	std::string backupName = alib::timeToString(time(nullptr), "%Y-%m-%d");
-	std::ofstream fout(config.getDbPath()+"."+backupName, std::ios::out|std::ios::binary);
-	fout << fin.rdbuf();
-	if( !fin || !fout )
+	try{
+		m_backup.backup();
+	}catch(alib::FileIOException e){
 		std::cerr << ">> Database Backup Failed." << std::endl;
-	else
-		std::cout << ">> Database Backed up." << std::endl;
+		return;
+	}
+	std::cout << ">> Database Backed up." << std::endl;
 }
 
-void ActionControl::doRestoreWorkLogFile(){
+void ActionControl::doRestoreWorkLogFile(int id){
+	try{
+		m_backup.restore(id);
+	}catch(alib::FileIOException e){
+		std::cerr << ">> No such BackupFile with ID" << std::endl;
+		return;
+	}
+	std::cout << ">> Database Restored." << std::endl;
+	m_dbHelper.reset();
 }
 
 void ActionControl::doLsBackupWorkLogFile(){
-	//ConfigLoader config;
-	//alib::Directory dir(config.getWorkDirPath());
+	m_backup.list();
 }
 
 /* --==--==--==--==--==--==--==--==--==-- */
@@ -340,8 +344,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 		std::pair<std::string,std::string>("Target Name",   (reeditFlag)? oldData->getTarget():   "")
 	};
 
-	if(!std::cin.eof())
-	std::cin.ignore();  // flush (<- getline)
+	std::cin.ignore(std::cin.rdbuf()->in_avail());  // flush (<- getline)
 	for(int i=0; i<FILE_NUM; i++){
 		std::stringstream detail;
 		// Commentのみ処理を特殊化

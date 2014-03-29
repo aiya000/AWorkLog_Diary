@@ -6,7 +6,7 @@
 class Shell {
 private:
 	/* 認識するコマンドとその列挙 */
-	static constexpr int CMD_LEN = 21;
+	static constexpr int CMD_LEN = 24;
 	static const std::string CMD_LIST[CMD_LEN];
 	enum CmdEnum {  // <--> CMD_LIST
 		LIST      = 0   , LS       = 1   ,
@@ -20,9 +20,10 @@ private:
 		REMOVE    = 13  , 
 		BACKUP    = 14  ,
 		RESTORE   = 15  ,
-		LS_BACKUP = 16  ,
-		Q         = 17  , EXIT     = 18  , 
-		H         = 19  , HELP     = 20
+		LS_BACKUP = 16  , LSB      = 17  ,
+		RM_BACKUP = 18  , RMB      = 19  ,
+		Q         = 20  , EXIT     = 21  , 
+		H         = 22  , HELP     = 23
 	};
 
 	/* 呼び出されるのアクション管理 */
@@ -53,6 +54,7 @@ private:
 	inline void backup();
 	inline void restore();
 	inline void ls_backup();
+	inline void rm_backup();
 	inline void help();
 	/* --==--==---==--==-- */
 };

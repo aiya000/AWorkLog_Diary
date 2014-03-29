@@ -4,6 +4,7 @@
 #include <tr1/array>
 #include <stdexcept>
 #include "../../Lib/SystemUtils.hpp"
+#include "Backupper.h"
 
 /*
  * 例外catchクラス、
@@ -19,6 +20,8 @@ private:
 	struct {
 		int start, end;
 	} m_range;
+
+	Backupper m_backup;
 	/* --==--==--==--==-- */
 public:
 	ActionControl();
@@ -43,7 +46,7 @@ public:
 	void doEditWorkLog(bool reeditFlag=false, int id=-1);
 	void doRemoveWorkLog(int id);
 	void doBackupWorkLogFile();
-	void doRestoreWorkLogFile();
+	void doRestoreWorkLogFile(int id);
 	void doLsBackupWorkLogFile();
 
 	/* --==--==--==--==-- */
@@ -51,7 +54,7 @@ public:
 private:
 	// <- doEditWorkLog & editDetails
 	struct OperationInterruptedException : public std::domain_error {
-		OperationInterruptedException(std::string str);
+		OperationInterruptedException(std::string cause);
 	};
 	// doEditWorkLog->
 	std::tr1::array<std::string,3>

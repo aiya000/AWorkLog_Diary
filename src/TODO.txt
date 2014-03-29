@@ -7,3 +7,12 @@
 デフォルトで含めない、追加オプションで含めることができる…にしたい。
 これができるならばview等の引数を持つものを
 コマンドライン引数として受け取れることになるのでそっちもするかもしれない。
+
+
+segmant fault:
+restore n ->
+listn * n ->
+restore n ->
+list      -> segment fault;
+=> 再現しない…？
+restoreとlistを交互に行うと発現する…？

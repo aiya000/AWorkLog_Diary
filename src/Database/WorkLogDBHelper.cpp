@@ -23,6 +23,18 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 		" comment   text          not null"  +
 		");")
 {
+	try{
+		this->reset();
+	}catch(DBFailureException e){
+		throw e;
+	}
+}
+void WorkLogDBHelper::reset() throw(DBFailureException){
+	this->close();
+	m_workLog.clear();
+
+	// *** *** *** //
+
 	ConfigLoader loader;
 	const std::string DB_PATH = loader.getDbPath();
 
@@ -52,12 +64,8 @@ WorkLogDBHelper::WorkLogDBHelper() throw(DBFailureException) :
 	this->loadWorkLog();
 }
 
-WorkLogDBHelper::~WorkLogDBHelper(){
-	this->close();
-}
-void WorkLogDBHelper::close(){
-	sqlite3_close(m_con);
-}
+WorkLogDBHelper::~WorkLogDBHelper()  { this->close(); }
+void WorkLogDBHelper::close() { sqlite3_close(m_con); }
 
 /* --==--==--==--==--==--==--==--==--==-- */
 
@@ -140,6 +148,7 @@ void WorkLogDBHelper::refreshWorkLogContainer()
 	throw(DBFailureException)
 {
 	try{
+		m_workLog.clear();
 		this->loadWorkLog();
 		this->getWorkLogByRange(0, this->getWorkLogSize());
 	}catch(DBFailureException e){
