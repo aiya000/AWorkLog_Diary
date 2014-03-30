@@ -4,7 +4,7 @@
 #include <tr1/array>
 #include <stdexcept>
 #include "../../Lib/SystemUtils.hpp"
-#include "Backupper.h"
+#include "BackupHelper.h"
 
 /*
  * 例外catchクラス、
@@ -21,7 +21,7 @@ private:
 		int start, end;
 	} m_range;
 
-	Backupper m_backup;
+	BackupHelper m_backup;
 	/* --==--==--==--==-- */
 public:
 	ActionControl();
@@ -45,9 +45,11 @@ public:
 	// 再編集モードの場合true、DBのログidを引数に指定
 	void doEditWorkLog(bool reeditFlag=false, int id=-1);
 	void doRemoveWorkLog(int id);
+
 	void doBackupWorkLogFile();
 	void doRestoreWorkLogFile(int id);
-	void doLsBackupWorkLogFile();
+	void doRemoveWorkLogFile(int id);
+	void doViewBackupList();
 
 	/* --==--==--==--==-- */
 

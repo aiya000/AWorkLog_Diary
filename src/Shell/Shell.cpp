@@ -17,8 +17,8 @@ const std::string Shell::CMD_LIST[] = {
 	"remove"    , 
 	"backup"    ,
 	"restore"   ,
-	"ls_backup" , "lsb"      ,
 	"rm_backup" , "rmb"      ,
+	"ls_backup" , "lsb"      ,
 	"q"         , "exit"     , 
 	"h"         , "help"
 };
@@ -91,13 +91,13 @@ bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
 		case RESTORE:
 			this->restore();
 			break;
-		case LS_BACKUP:
-		case LSB:
-			this->ls_backup();
-			break;
 		case RM_BACKUP:
 		case RMB:
 			this->rm_backup();
+			break;
+		case LS_BACKUP:
+		case LSB:
+			this->ls_backup();
 			break;
 		case Q:
 		case EXIT:
@@ -202,7 +202,7 @@ inline void Shell::backup(){
 }
 
 inline void Shell::restore(){
-	int selectId = this->getInput<int>("backup ID");
+	int selectId = this->getInput<int>("restore target FileID");
 	if(selectId != 0)
 		action.doRestoreWorkLogFile(selectId);
 	else
@@ -210,12 +210,17 @@ inline void Shell::restore(){
 	std::cout << std::endl;
 }
 
-inline void Shell::ls_backup(){
-	action.doLsBackupWorkLogFile();
+inline void Shell::rm_backup(){
+	int selectId = this->getInput<int>("remove FileID");
+	if(selectId != 0)
+		action.doRemoveWorkLogFile(selectId);
+	else
+		std::cout << "Aborted." << std::endl;
+	std::cout << std::endl;
 }
 
-inline void Shell::rm_backup(){
-	//TODO
+inline void Shell::ls_backup(){
+	action.doViewBackupList();
 }
 
 inline void Shell::help(){
@@ -231,8 +236,8 @@ inline void Shell::help(){
 	          << "[remove n]:"               << "\t\t\t"   << "Remove WorkLog by given ID"                  << std::endl
 	          << "[backup]:"                 << "\t\t\t"   << "Backup Database file"                        << std::endl
 	          << "[restore n]:"              << "\t\t\t"   << "Restore Database file from backed up files"  << std::endl
-	          << "[ls_backup] or [lsb]:"     << "\t\t"     << "List up Backup files"                        << std::endl
 	          << "[rm_backup n] or [rmb n]:" << '\t'       << "Remove Backup file by given fileID"          << std::endl
+	          << "[ls_backup] or [lsb]:"     << "\t\t"     << "List up Backup files"                        << std::endl
 	          << "[q] or [exit]:"            << "\t\t\t"   << "Exiting Shell"                               << std::endl
 	          << "[h] or [help]:"            << "\t\t\t"   << "View This Help"                              << std::endl
 	          << std::endl;

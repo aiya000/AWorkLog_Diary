@@ -20,8 +20,8 @@ private:
 		REMOVE    = 13  , 
 		BACKUP    = 14  ,
 		RESTORE   = 15  ,
-		LS_BACKUP = 16  , LSB      = 17  ,
-		RM_BACKUP = 18  , RMB      = 19  ,
+		RM_BACKUP = 16  , RMB      = 17  ,
+		LS_BACKUP = 18  , LSB      = 19  ,
 		Q         = 20  , EXIT     = 21  , 
 		H         = 22  , HELP     = 23
 	};
@@ -53,8 +53,8 @@ private:
 	inline void remove();
 	inline void backup();
 	inline void restore();
-	inline void ls_backup();
 	inline void rm_backup();
+	inline void ls_backup();
 	inline void help();
 	/* --==--==---==--==-- */
 };

@@ -18,3 +18,7 @@ exam: [$ diary list] to list view.
 
 2014-03-29
 Various functions of Backup relation were added.
+
+2014-03-30
+function of Listup backed up files were added.
+issue => Cannot remove file without knowing why;

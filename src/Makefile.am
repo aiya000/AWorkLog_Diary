@@ -16,8 +16,8 @@ Shell/Shell.h                   \
 Shell/Action                    \
 Shell/Action/ActionControl.cpp  \
 Shell/Action/ActionControl.h    \
-Shell/Action/Backupper.cpp      \
-Shell/Action/Backupper.h        \
+Shell/Action/BackupHelper.cpp   \
+Shell/Action/BackupHelper.h     \
 Shell/Shell.cpp                 \
 Database/WorkLogDBHelper.cpp    \
 Database/WorkLogDBHelper.h      \

@@ -94,7 +94,7 @@ am_diary_OBJECTS = diary-ConfigLoader.$(OBJEXT) \
 	diary-Convert.$(OBJEXT) diary-FileSystem.$(OBJEXT) \
 	diary-StringUtils.$(OBJEXT) diary-StreamUtils.$(OBJEXT) \
 	diary-SystemUtils.$(OBJEXT) diary-ActionControl.$(OBJEXT) \
-	diary-Backupper.$(OBJEXT) diary-Shell.$(OBJEXT) \
+	diary-BackupHelper.$(OBJEXT) diary-Shell.$(OBJEXT) \
 	diary-WorkLogDBHelper.$(OBJEXT) \
 	diary-DBFailureException.$(OBJEXT) diary-WorkLogData.$(OBJEXT) \
 	diary-Main.$(OBJEXT)
@@ -282,8 +282,8 @@ Shell/Shell.h                   \
 Shell/Action                    \
 Shell/Action/ActionControl.cpp  \
 Shell/Action/ActionControl.h    \
-Shell/Action/Backupper.cpp      \
-Shell/Action/Backupper.h        \
+Shell/Action/BackupHelper.cpp   \
+Shell/Action/BackupHelper.h     \
 Shell/Shell.cpp                 \
 Database/WorkLogDBHelper.cpp    \
 Database/WorkLogDBHelper.h      \
@@ -383,7 +383,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-ActionControl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-Backupper.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-BackupHelper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-ConfigLoader.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-Convert.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/diary-DBFailureException.Po@am__quote@
@@ -508,19 +508,19 @@ diary-ActionControl.obj: Shell/Action/ActionControl.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-ActionControl.obj `if test -f 'Shell/Action/ActionControl.cpp'; then $(CYGPATH_W) 'Shell/Action/ActionControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/ActionControl.cpp'; fi`
 
-diary-Backupper.o: Shell/Action/Backupper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Backupper.o -MD -MP -MF $(DEPDIR)/diary-Backupper.Tpo -c -o diary-Backupper.o `test -f 'Shell/Action/Backupper.cpp' || echo '$(srcdir)/'`Shell/Action/Backupper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-Backupper.Tpo $(DEPDIR)/diary-Backupper.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Shell/Action/Backupper.cpp' object='diary-Backupper.o' libtool=no @AMDEPBACKSLASH@
+diary-BackupHelper.o: Shell/Action/BackupHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-BackupHelper.o -MD -MP -MF $(DEPDIR)/diary-BackupHelper.Tpo -c -o diary-BackupHelper.o `test -f 'Shell/Action/BackupHelper.cpp' || echo '$(srcdir)/'`Shell/Action/BackupHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-BackupHelper.Tpo $(DEPDIR)/diary-BackupHelper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Shell/Action/BackupHelper.cpp' object='diary-BackupHelper.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Backupper.o `test -f 'Shell/Action/Backupper.cpp' || echo '$(srcdir)/'`Shell/Action/Backupper.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-BackupHelper.o `test -f 'Shell/Action/BackupHelper.cpp' || echo '$(srcdir)/'`Shell/Action/BackupHelper.cpp
 
-diary-Backupper.obj: Shell/Action/Backupper.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Backupper.obj -MD -MP -MF $(DEPDIR)/diary-Backupper.Tpo -c -o diary-Backupper.obj `if test -f 'Shell/Action/Backupper.cpp'; then $(CYGPATH_W) 'Shell/Action/Backupper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/Backupper.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-Backupper.Tpo $(DEPDIR)/diary-Backupper.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Shell/Action/Backupper.cpp' object='diary-Backupper.obj' libtool=no @AMDEPBACKSLASH@
+diary-BackupHelper.obj: Shell/Action/BackupHelper.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-BackupHelper.obj -MD -MP -MF $(DEPDIR)/diary-BackupHelper.Tpo -c -o diary-BackupHelper.obj `if test -f 'Shell/Action/BackupHelper.cpp'; then $(CYGPATH_W) 'Shell/Action/BackupHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/BackupHelper.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-BackupHelper.Tpo $(DEPDIR)/diary-BackupHelper.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='Shell/Action/BackupHelper.cpp' object='diary-BackupHelper.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Backupper.obj `if test -f 'Shell/Action/Backupper.cpp'; then $(CYGPATH_W) 'Shell/Action/Backupper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/Backupper.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-BackupHelper.obj `if test -f 'Shell/Action/BackupHelper.cpp'; then $(CYGPATH_W) 'Shell/Action/BackupHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/BackupHelper.cpp'; fi`
 
 diary-Shell.o: Shell/Shell.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Shell.o -MD -MP -MF $(DEPDIR)/diary-Shell.Tpo -c -o diary-Shell.o `test -f 'Shell/Shell.cpp' || echo '$(srcdir)/'`Shell/Shell.cpp

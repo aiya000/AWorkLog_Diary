@@ -91,9 +91,10 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_diary_OBJECTS = diary-ConfigLoader.$(OBJEXT) \
-	diary-Convert.$(OBJEXT) diary-StringUtils.$(OBJEXT) \
-	diary-StreamUtils.$(OBJEXT) diary-SystemUtils.$(OBJEXT) \
-	diary-ActionControl.$(OBJEXT) diary-Shell.$(OBJEXT) \
+	diary-Convert.$(OBJEXT) diary-FileSystem.$(OBJEXT) \
+	diary-StringUtils.$(OBJEXT) diary-StreamUtils.$(OBJEXT) \
+	diary-SystemUtils.$(OBJEXT) diary-ActionControl.$(OBJEXT) \
+	diary-BackupHelper.$(OBJEXT) diary-Shell.$(OBJEXT) \
 	diary-WorkLogDBHelper.$(OBJEXT) \
 	diary-DBFailureException.$(OBJEXT) diary-WorkLogData.$(OBJEXT) \
 	diary-Main.$(OBJEXT)
@@ -173,12 +174,12 @@ am__define_uniq_tagged_files = \
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-ACLOCAL = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing autoconf
-AUTOHEADER = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing autoheader
-AUTOMAKE = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing automake-1.13
+AUTOCONF = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing autoconf
+AUTOHEADER = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing autoheader
+AUTOMAKE = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing automake-1.13
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -206,7 +207,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lsqlite3 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing makeinfo
+MAKEINFO = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = aworklog_diary
@@ -221,10 +222,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 0.1
-abs_builddir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/src
-abs_srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/src
-abs_top_builddir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
-abs_top_srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
+abs_builddir = /home/yotu/working/AWorkLog_Diary/src
+abs_srcdir = /home/yotu/working/AWorkLog_Diary/src
+abs_top_builddir = /home/yotu/working/AWorkLog_Diary
+abs_top_srcdir = /home/yotu/working/AWorkLog_Diary
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -244,7 +245,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/install-sh
+install_sh = ${SHELL} /home/yotu/working/AWorkLog_Diary/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -269,6 +270,8 @@ Config/ConfigLoader.h           \
 Config/ConfigLoader.cpp         \
 Lib/Convert.cpp                 \
 Lib/Convert.hpp                 \
+Lib/FileSystem.cpp              \
+Lib/FileSystem.hpp              \
 Lib/StringUtils.cpp             \
 Lib/StringUtils.hpp             \
 Lib/StreamUtils.hpp             \
@@ -279,6 +282,8 @@ Shell/Shell.h                   \
 Shell/Action                    \
 Shell/Action/ActionControl.cpp  \
 Shell/Action/ActionControl.h    \
+Shell/Action/BackupHelper.cpp   \
+Shell/Action/BackupHelper.h     \
 Shell/Shell.cpp                 \
 Database/WorkLogDBHelper.cpp    \
 Database/WorkLogDBHelper.h      \
@@ -378,9 +383,11 @@ distclean-compile:
 	-rm -f *.tab.c
 
 include ./$(DEPDIR)/diary-ActionControl.Po
+include ./$(DEPDIR)/diary-BackupHelper.Po
 include ./$(DEPDIR)/diary-ConfigLoader.Po
 include ./$(DEPDIR)/diary-Convert.Po
 include ./$(DEPDIR)/diary-DBFailureException.Po
+include ./$(DEPDIR)/diary-FileSystem.Po
 include ./$(DEPDIR)/diary-Main.Po
 include ./$(DEPDIR)/diary-Shell.Po
 include ./$(DEPDIR)/diary-StreamUtils.Po
@@ -430,6 +437,20 @@ diary-Convert.obj: Lib/Convert.cpp
 #	$(AM_V_CXX)source='Lib/Convert.cpp' object='diary-Convert.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-Convert.obj `if test -f 'Lib/Convert.cpp'; then $(CYGPATH_W) 'Lib/Convert.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/Convert.cpp'; fi`
+
+diary-FileSystem.o: Lib/FileSystem.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-FileSystem.o -MD -MP -MF $(DEPDIR)/diary-FileSystem.Tpo -c -o diary-FileSystem.o `test -f 'Lib/FileSystem.cpp' || echo '$(srcdir)/'`Lib/FileSystem.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-FileSystem.Tpo $(DEPDIR)/diary-FileSystem.Po
+#	$(AM_V_CXX)source='Lib/FileSystem.cpp' object='diary-FileSystem.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-FileSystem.o `test -f 'Lib/FileSystem.cpp' || echo '$(srcdir)/'`Lib/FileSystem.cpp
+
+diary-FileSystem.obj: Lib/FileSystem.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-FileSystem.obj -MD -MP -MF $(DEPDIR)/diary-FileSystem.Tpo -c -o diary-FileSystem.obj `if test -f 'Lib/FileSystem.cpp'; then $(CYGPATH_W) 'Lib/FileSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/FileSystem.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-FileSystem.Tpo $(DEPDIR)/diary-FileSystem.Po
+#	$(AM_V_CXX)source='Lib/FileSystem.cpp' object='diary-FileSystem.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-FileSystem.obj `if test -f 'Lib/FileSystem.cpp'; then $(CYGPATH_W) 'Lib/FileSystem.cpp'; else $(CYGPATH_W) '$(srcdir)/Lib/FileSystem.cpp'; fi`
 
 diary-StringUtils.o: Lib/StringUtils.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-StringUtils.o -MD -MP -MF $(DEPDIR)/diary-StringUtils.Tpo -c -o diary-StringUtils.o `test -f 'Lib/StringUtils.cpp' || echo '$(srcdir)/'`Lib/StringUtils.cpp
@@ -486,6 +507,20 @@ diary-ActionControl.obj: Shell/Action/ActionControl.cpp
 #	$(AM_V_CXX)source='Shell/Action/ActionControl.cpp' object='diary-ActionControl.obj' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
 #	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-ActionControl.obj `if test -f 'Shell/Action/ActionControl.cpp'; then $(CYGPATH_W) 'Shell/Action/ActionControl.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/ActionControl.cpp'; fi`
+
+diary-BackupHelper.o: Shell/Action/BackupHelper.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-BackupHelper.o -MD -MP -MF $(DEPDIR)/diary-BackupHelper.Tpo -c -o diary-BackupHelper.o `test -f 'Shell/Action/BackupHelper.cpp' || echo '$(srcdir)/'`Shell/Action/BackupHelper.cpp
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-BackupHelper.Tpo $(DEPDIR)/diary-BackupHelper.Po
+#	$(AM_V_CXX)source='Shell/Action/BackupHelper.cpp' object='diary-BackupHelper.o' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-BackupHelper.o `test -f 'Shell/Action/BackupHelper.cpp' || echo '$(srcdir)/'`Shell/Action/BackupHelper.cpp
+
+diary-BackupHelper.obj: Shell/Action/BackupHelper.cpp
+	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-BackupHelper.obj -MD -MP -MF $(DEPDIR)/diary-BackupHelper.Tpo -c -o diary-BackupHelper.obj `if test -f 'Shell/Action/BackupHelper.cpp'; then $(CYGPATH_W) 'Shell/Action/BackupHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/BackupHelper.cpp'; fi`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/diary-BackupHelper.Tpo $(DEPDIR)/diary-BackupHelper.Po
+#	$(AM_V_CXX)source='Shell/Action/BackupHelper.cpp' object='diary-BackupHelper.obj' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) \
+#	$(AM_V_CXX_no)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -c -o diary-BackupHelper.obj `if test -f 'Shell/Action/BackupHelper.cpp'; then $(CYGPATH_W) 'Shell/Action/BackupHelper.cpp'; else $(CYGPATH_W) '$(srcdir)/Shell/Action/BackupHelper.cpp'; fi`
 
 diary-Shell.o: Shell/Shell.cpp
 	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(diary_CXXFLAGS) $(CXXFLAGS) -MT diary-Shell.o -MD -MP -MF $(DEPDIR)/diary-Shell.Tpo -c -o diary-Shell.o `test -f 'Shell/Shell.cpp' || echo '$(srcdir)/'`Shell/Shell.cpp
