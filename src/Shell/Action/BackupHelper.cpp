@@ -26,6 +26,8 @@ void BackupHelper::backup() throw(alib::FileIOException){
 	if( fin.fail() || fout.fail() )
 		throw alib::FileIOException();
 	fout << fin.rdbuf();
+	fout.close();
+	this->reset();
 }
 
 void BackupHelper::restore(int id) throw(alib::FileIOException){
@@ -53,7 +55,8 @@ void BackupHelper::remove(int id) throw(alib::FileIOException){
 	if(m_backupFiles.count(id) != 1)
 		throw alib::FileIOException(">> No such Backup FileID.");
 
-	int succeed = std::remove(m_backupFiles[id].c_str());
+	int succeed = std::remove(
+			(m_config.getWorkDirPath() + "/" + m_backupFiles[id]).c_str() );
 	if(succeed != 0)
 		throw alib::FileIOException(">> File Remove Failed.");
 	this->reset();
