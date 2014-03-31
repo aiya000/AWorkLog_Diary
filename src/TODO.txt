@@ -13,3 +13,7 @@ restore n ->
 list      -> segment fault;
 => 再現しない…？
 restoreとlistを交互に行うと発現する…？
+
+Shell.cpp
+backup -> command not found;
+rmb 1 2 3 -> 勝手にresetするので消去先が矛盾する。

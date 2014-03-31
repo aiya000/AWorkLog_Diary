@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "../Lib/StringUtils.hpp"
+#include <cstdlib>
 #include <cassert>
 
 // This synchronize order with enum CmdEnum.
@@ -29,7 +30,8 @@ void Shell::run(){
 	while(true){
 		std::cout << "awork$ ";
 		
-		std::string cmd;  std::cin >> cmd;
+		std::string cmd;//  std::cin >> cmd;
+		std::getline(std::cin, cmd); // TODO あの「std::cinを自作する」でもしてみる？
 		try{
 			bool noexit = this->launch( alib::trim(cmd) );
 			if(!noexit)  break;
@@ -41,17 +43,27 @@ void Shell::run(){
 
 
 /* --==--==--==--== Launch ==--===-==--==-- */
+inline std::vector<int> Shell::vaToVi(std::vector<std::string>& va){
+	std::vector<int> vi;
+	for(auto& a : va)
+		vi.push_back( std::atoi(a.c_str()) );
+	return vi;
+}
 bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
+	// 引数とコマンドを分割
+	std::vector<std::string> cmdLine = alib::split(cmd, ' ');
 
 	/* 渡された引数が何番目のコマンドか判定 */
 	int i;
 	for(i=0; i<CMD_LEN; i++)
-		if(cmd == CMD_LIST[i])
+		if(cmdLine[0] == CMD_LIST[i])
 			break;
 	if(i == CMD_LEN)
 		throw std::invalid_argument("command not found");
 
 	/* 列挙子として判定 */
+	cmdLine.erase( cmdLine.begin() );
+	bool argFlag = static_cast<bool>( cmdLine.size() );
 	switch( static_cast<CmdEnum>(i) ){
 		case LIST:
 		case LS:
@@ -66,13 +78,16 @@ bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
 			this->listnext();
 			break;
 		case FIND:
-			this->find();
+			if(argFlag)  this->find(cmdLine[0]);
+			else         this->find();
 			break;
 		case SEARCH:
-			this->search();
+			if(argFlag)  this->search(cmdLine[0]);
+			else         this->search();
 			break;
 		case VIEW:
-			this->view();
+			if(argFlag)  this->view( vaToVi(cmdLine) );
+			else         this->view();
 			break;
 		case EDIT:
 		case WRITE:
@@ -80,20 +95,24 @@ bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
 			break;
 		case REEDIT:
 		case REVISE:
-			this->reedit();
+			if(argFlag)  this->reedit( std::atoi(cmdLine[0].c_str()) );  // unknown str is 0 => abort;
+			else         this->reedit();
 			break;
 		case REMOVE:
-			this->remove();
+			if(argFlag)  this->remove( vaToVi(cmdLine) );
+			else         this->remove();
 			break;
 		case BACKUP:
 			this->backup();
 			break;
 		case RESTORE:
-			this->restore();
+			if(argFlag)  this->restore( std::atoi(cmdLine[0].c_str()) );
+			else         this->restore();
 			break;
 		case RM_BACKUP:
 		case RMB:
-			this->rm_backup();
+			if(argFlag)  this->rm_backup( vaToVi(cmdLine) );
+			else         this->rm_backup();
 			break;
 		case LS_BACKUP:
 		case LSB:
@@ -148,10 +167,25 @@ inline void Shell::find(){
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
+inline void Shell::find(std::string& arg){
+	if(arg != "0")
+		action.doFindFunction(arg);
+	else
+		std::cout << "Aborted." << std::endl;
+	std::cout << std::endl;
+}
+
 inline void Shell::search(){
 	std::string regex = this->getInput<std::string>("keyword");
 	if(regex != "0")
 		action.doSearchFunction(regex);
+	else
+		std::cout << "Aborted." << std::endl;
+	std::cout << std::endl;
+}
+inline void Shell::search(std::string& arg){
+	if(arg != "0")
+		action.doSearchFunction(arg);
 	else
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
@@ -164,6 +198,15 @@ inline void Shell::view(){
 	else
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
+}
+inline void Shell::view(std::vector<int>&& args){
+	for(auto id : args){
+		if(id != 0)
+			action.doViewWorkLogDetail(id);
+		else
+			std::cout << "Aborted." << std::endl;
+		std::cout << std::endl;
+	}
 }
 
 inline void Shell::edit(){
@@ -178,6 +221,13 @@ inline void Shell::reedit(){
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
+inline void Shell::reedit(int arg){
+	if(arg != 0)
+		action.doEditWorkLog(true, arg);
+	else
+		std::cout << "Aborted." << std::endl;
+	std::cout << std::endl;
+}
 
 inline void Shell::remove(){
 	int selectId = this->getInput<int>("LogID");
@@ -186,6 +236,15 @@ inline void Shell::remove(){
 	else
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
+}
+inline void Shell::remove(std::vector<int>&& args){
+	for(auto id : args){
+		if(id != 0)
+			action.doRemoveWorkLog(id);
+		else
+			std::cout << "Aborted." << std::endl;
+		std::cout << std::endl;
+	}
 }
 
 inline void Shell::backup(){
@@ -209,6 +268,13 @@ inline void Shell::restore(){
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
 }
+inline void Shell::restore(int arg){
+	if(arg != 0)
+		action.doRestoreWorkLogFile(arg);
+	else
+		std::cout << "Aborted." << std::endl;
+	std::cout << std::endl;
+}
 
 inline void Shell::rm_backup(){
 	int selectId = this->getInput<int>("remove FileID");
@@ -217,6 +283,15 @@ inline void Shell::rm_backup(){
 	else
 		std::cout << "Aborted." << std::endl;
 	std::cout << std::endl;
+}
+inline void Shell::rm_backup(std::vector<int>&& args){
+	for(auto id : args){
+		if(id != 0)
+			action.doRemoveWorkLogFile(id);
+		else
+			std::cout << "Aborted." << std::endl;
+		std::cout << std::endl;
+	}
 }
 
 inline void Shell::ls_backup(){

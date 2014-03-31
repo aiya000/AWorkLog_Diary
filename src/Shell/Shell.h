@@ -36,6 +36,7 @@ public:
 	/* --==- Launch -==-- */
 	// exitならfalse、それ意外ならtrue //
 	bool launch(std::string&& cmd) throw(std::invalid_argument);
+	inline std::vector<int> vaToVi(std::vector<std::string>& va);
 private:
 	/* --==- Util -==-- */
 	template <typename T>
@@ -45,15 +46,22 @@ private:
 	inline void list();
 	inline void listprev();
 	inline void listnext();
-	inline void find();
-	inline void search();
-	inline void view();
+	inline void find();       // {{{
+	inline void find(std::string& arg);    // }}}
+	inline void search();     // {{{
+	inline void search(std::string& arg);  // }}}
+	inline void view();       // {{{
+	inline void view(std::vector<int>&& args);  // }}}
 	inline void edit();
-	inline void reedit();
-	inline void remove();
+	inline void reedit();     // {{{
+	inline void reedit(int arg);  // }}}
+	inline void remove();     // {{{
+	inline void remove(std::vector<int>&& args);  // }}}
 	inline void backup();
-	inline void restore();
-	inline void rm_backup();
+	inline void restore();    // {{{
+	inline void restore(int arg);  // }}}
+	inline void rm_backup();  // {{{
+	inline void rm_backup(std::vector<int>&& args);  // }}}
 	inline void ls_backup();
 	inline void help();
 	/* --==--==---==--==-- */

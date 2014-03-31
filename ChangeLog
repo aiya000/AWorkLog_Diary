@@ -22,3 +22,8 @@ Various functions of Backup relation were added.
 2014-03-30
 function of Listup backed up files were added.
 issue => Cannot remove file without knowing why;
+
+2013-03-31
+previous issue fixed.
+Various command's args corresponded!
+exam: [view 1 2]
