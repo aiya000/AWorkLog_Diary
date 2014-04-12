@@ -1,0 +1,6 @@
+$ diary reedit n
+-> 結局番号を要求される -> Function入力をスルーされるので変更できない。
+
+Shell.cpp
+backup -> command not found;
+rmb 1 2 3 -> 勝手にresetするので消去先が矛盾する。

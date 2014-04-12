@@ -11,7 +11,9 @@ int main(int argc, char** argv){
 		// なんでだよ？
 		//Shell shell;
 		std::unique_ptr<Shell> shell(new Shell);
-		char* cmd = argv[1];
+		std::string cmd = "";
+		for(int i=1; i<argc; i++)
+			cmd += std::string(argv[i]) + " ";
 		try{
 			//shell.launch( alib::trim(cmd) );
 			shell->launch( alib::trim(cmd) );
