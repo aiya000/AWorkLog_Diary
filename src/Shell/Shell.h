@@ -36,6 +36,7 @@ public:
 	/* --==- Launch -==-- */
 	// exitならfalse、それ意外ならtrue //
 	bool launch(std::string&& cmd) throw(std::invalid_argument);
+	bool launch(std::string&  cmd) throw(std::invalid_argument);
 	inline std::vector<int> vaToVi(std::vector<std::string>& va);
 private:
 	/* --==- Util -==-- */

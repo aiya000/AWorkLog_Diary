@@ -30,12 +30,12 @@ void Shell::run(){
 	while(true){
 		std::cout << "awork$ ";
 		
-		std::string cmd;//  std::cin >> cmd;
-		std::getline(std::cin, cmd); // TODO あの「std::cinを自作する」でもしてみる？
+		std::string cmd;
+		std::cin >> std::ws >> cmd;
 		try{
 			bool noexit = this->launch( alib::trim(cmd) );
 			if(!noexit)  break;
-		}catch(std::invalid_argument e){
+		}catch(std::invalid_argument& e){
 			std::cerr << e.what() << ": " << cmd << std::endl;
 		}
 	}
@@ -50,6 +50,13 @@ inline std::vector<int> Shell::vaToVi(std::vector<std::string>& va){
 	return vi;
 }
 bool Shell::launch(std::string&& cmd) throw(std::invalid_argument){
+	try{
+		return this->launch(cmd);
+	}catch(std::invalid_argument& e){
+		throw e;
+	}
+}
+bool Shell::launch(std::string& cmd) throw(std::invalid_argument){
 	// 引数とコマンドを分割
 	std::vector<std::string> cmdLine = alib::split(cmd, ' ');
 

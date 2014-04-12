@@ -15,8 +15,8 @@ int main(int argc, char** argv){
 		for(int i=1; i<argc; i++)
 			cmd += std::string(argv[i]) + " ";
 		try{
-			//shell.launch( alib::trim(cmd) );
-			shell->launch( alib::trim(cmd) );
+			//shell.launch(cmd);
+			shell->launch(cmd);
 		}catch(std::invalid_argument e){
 			std::cerr << e.what() << ": " << cmd << std::endl;
 		}

@@ -102,7 +102,7 @@ void ActionControl::doFindFunction(std::string keyword){
 	std::vector<WorkLogData> *workLog;
 	try{
 		workLog = &m_dbHelper.getWorkLogFindByKeyword(keyword);
-	}catch(DBFailureException e){
+	}catch(DBFailureException& e){
 		std::cout << ">> Not Found WorkLog Keyword: " << keyword << std::endl;
 		return;
 	}
@@ -113,9 +113,9 @@ void ActionControl::doSearchFunction(std::string regex){
 	std::vector<WorkLogData> *workLog;
 	try{
 		workLog = &m_dbHelper.getWorkLogSearchByRegex(regex);
-	}catch(std::regex_error e){
+	}catch(std::regex_error& e){
 		std::cout << ">> Not an valid Regex: \"" << regex << "\"" << std::endl;
-	}catch(DBFailureException e){
+	}catch(DBFailureException& e){
 		std::cout << ">> Not Found WorkLog Regex: \"" << regex << "\"" << std::endl;
 		return;
 	}
@@ -127,7 +127,7 @@ void ActionControl::doViewWorkLogDetail(int id){
 	WorkLogData *workLog;
 	try{
 		workLog = &m_dbHelper.getWorkLogById(id);
-	}catch(DBFailureException e){
+	}catch(DBFailureException& e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 		return;
 	}
@@ -162,7 +162,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 			fout << workLog.getTarget();
 			fout.close();  fout.open(fileList[2], std::ios::out);
 			fout << workLog.getComment();
-		}catch(DBFailureException e){
+		}catch(DBFailureException& e){
 			std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 			return;
 		}
@@ -172,7 +172,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 	std::tr1::array<std::string,3> texts;
 	try{
 		texts = this->editDetailsUseStdin(fileList[2], reeditFlag, id);
-	}catch(OperationInterruptedException e){
+	}catch(OperationInterruptedException& e){
 		std::cout << e.what() << std::endl;
 		for(std::string file : fileList)
 			std::remove(file.c_str());
@@ -195,7 +195,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 				logData.setId(id);
 				m_dbHelper.updateWorkLog(logData);
 			}
-		}catch(DBFailureException e){
+		}catch(DBFailureException& e){
 			std::cerr << e.what()                                             << std::endl
 			          << ">> Writing to Database faild"                       << std::endl
 			          << ">> Directory Permission is Readable and Writable ?" << std::endl;
@@ -216,7 +216,7 @@ void ActionControl::doRemoveWorkLog(int id){
 	try{
 		WorkLogData workLog = m_dbHelper.getWorkLogById(id);
 		this->viewDetails(workLog);
-	}catch(DBFailureException e){
+	}catch(DBFailureException& e){
 		std::cerr << ">> No such WorkLog ID: " << id << std::endl;
 		return;
 	}
@@ -225,7 +225,7 @@ void ActionControl::doRemoveWorkLog(int id){
 	try{
 		if(this->confirm())
 			m_dbHelper.removeWorkLog(id);
-	}catch(DBFailureException e){
+	}catch(DBFailureException& e){
 		std::cerr << e.what() << std::endl;
 	}
 }
@@ -233,7 +233,7 @@ void ActionControl::doRemoveWorkLog(int id){
 void ActionControl::doBackupWorkLogFile(){
 	try{
 		m_backup.backup();
-	}catch(alib::FileIOException e){
+	}catch(alib::FileIOException& e){
 		std::cerr << ">> Database Backup Failed." << std::endl;
 		return;
 	}
@@ -243,7 +243,7 @@ void ActionControl::doBackupWorkLogFile(){
 void ActionControl::doRestoreWorkLogFile(int id){
 	try{
 		m_backup.restore(id);
-	}catch(alib::FileIOException e){
+	}catch(alib::FileIOException& e){
 		std::cerr << ">> No such BackupFile ID." << std::endl;
 		return;
 	}
@@ -254,7 +254,7 @@ void ActionControl::doRestoreWorkLogFile(int id){
 void ActionControl::doRemoveWorkLogFile(int id){
 	try{
 		m_backup.remove(id);
-	}catch(alib::FileIOException e){
+	}catch(alib::FileIOException& e){
 		std::cerr << e.message() << std::endl;
 		return;
 	}
@@ -306,7 +306,7 @@ std::tr1::array<std::string,3> ActionControl::editDetails(/*{{{*/
 					if(line == "")
 						std::cout << "Warn>> Comment is Empty" << std::endl;
 				}
-			}catch(DBFailureException e){
+			}catch(DBFailureException& e){
 				std::cout << ">> " << e.what() << std::endl;
 				std::cout << ">> If Continue(c), Retry(r), Abort(a)." << std::endl;
 
@@ -355,13 +355,13 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 	};
 
 	std::cin.ignore(std::cin.rdbuf()->in_avail());  // flush (<- getline)
+	std::cout << ">> input (0) is abort" << std::endl;
 	for(int i=0; i<FILE_NUM; i++){
 		std::stringstream detail;
 		// Commentのみ処理を特殊化
 		if(i != 2){
 			if(reeditFlag)
 				std::cout << "Do not change by Enter key" << std::endl;
-			std::cout << ">> abort(0)" << std::endl;
 			std::cout << entry[i].first;
 			if(reeditFlag)
 				std::cout << "(default [" << entry[i].second << "])";
@@ -370,7 +370,7 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 			bool inputFlag = false;
 			while(!inputFlag){
 				std::cout << ">> ";
-				std::getline(std::cin, input);
+				std::cin >> std::ws >> input;
 				if(input == "0"){
 					throw OperationInterruptedException(">> Operation Aborted");
 				}else if(input != ""){
