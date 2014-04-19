@@ -1,0 +1,3 @@
+Shell.cpp
+backup -> command not found;
+rmb 1 2 3 -> 勝手にresetするので消去先が矛盾する。

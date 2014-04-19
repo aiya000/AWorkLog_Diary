@@ -292,9 +292,10 @@ inline void Shell::rm_backup(){
 	std::cout << std::endl;
 }
 inline void Shell::rm_backup(std::vector<int>&& args){
-	for(auto id : args){
-		if(id != 0)
-			action.doRemoveWorkLogFile(id);
+	for(int i=0; i<args.size(); i++){
+		args[i] -= i;  // fix cont numbers
+		if(args[i] != 0)
+			action.doRemoveWorkLogFile(args[i]);
 		else
 			std::cout << "Aborted." << std::endl;
 		std::cout << std::endl;

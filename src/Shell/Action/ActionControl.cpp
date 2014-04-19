@@ -244,7 +244,7 @@ void ActionControl::doRestoreWorkLogFile(int id){
 	try{
 		m_backup.restore(id);
 	}catch(alib::FileIOException& e){
-		std::cerr << ">> No such BackupFile ID." << std::endl;
+		std::cerr << ">> No such BackupFile ID." << id << std::endl;
 		return;
 	}
 	std::cout << ">> Database Restored." << std::endl;
@@ -255,7 +255,7 @@ void ActionControl::doRemoveWorkLogFile(int id){
 	try{
 		m_backup.remove(id);
 	}catch(alib::FileIOException& e){
-		std::cerr << e.message() << std::endl;
+		std::cerr << e.message() << id << std::endl;
 		return;
 	}
 	std::cout << ">> Database File Removed." << std::endl;

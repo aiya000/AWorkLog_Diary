@@ -42,14 +42,15 @@ namespace alib {
 	/* --==--==--==--==--==--==--==--==--==--==-- */
 	std::vector<std::string> split(const std::string& str, const char delimiter){
 		std::vector<std::string> devided;
+		std::string sp = alib::trim(str);
 		int current = 0, i;
-		for(i=0; i<str.size(); i++){
-			if(str[i] == delimiter){
-				devided.push_back( str.substr(current, i-current) );
+		for(i=0; i<sp.size(); i++){
+			if(sp[i] == delimiter){
+				devided.push_back( sp.substr(current, i-current) );
 				current = i+1;
 			}
 		}
-		devided.push_back( str.substr(current) );
+		devided.push_back( sp.substr(current) );
 		return devided;
 	}
 	std::vector<std::string> split(const std::string&& str, const char delimiter){
