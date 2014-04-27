@@ -145,6 +145,7 @@ void ActionControl::doEditWorkLog(bool reeditFlag, int id){
 	 * Target
 	 * Comment
 	 */
+	// TODO: useStdinなら3ついらない。
 	std::random_device rand;
 	for(int i=0; i<FILE_NUM; i++){
 		std::stringstream ss;
@@ -370,7 +371,9 @@ std::tr1::array<std::string,3> ActionControl::editDetailsUseStdin(/*{{{*/
 			bool inputFlag = false;
 			while(!inputFlag){
 				std::cout << ">> ";
-				std::cin >> std::ws >> input;
+				char in[1024];
+				std::cin.getline(in, sizeof(in));
+				input = in;
 				if(input == "0"){
 					throw OperationInterruptedException(">> Operation Aborted");
 				}else if(input != ""){

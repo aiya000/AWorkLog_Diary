@@ -13,7 +13,7 @@
 # PARTICULAR PURPOSE.
 
 
-
+VPATH = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
   case $${target_option-} in \
@@ -189,12 +189,12 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-ACLOCAL = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing aclocal-1.13
+ACLOCAL = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing aclocal-1.13
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing autoconf
-AUTOHEADER = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing autoheader
-AUTOMAKE = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing automake-1.13
+AUTOCONF = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing autoconf
+AUTOHEADER = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing autoheader
+AUTOMAKE = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing automake-1.13
 AWK = gawk
 CC = gcc
 CCDEPMODE = depmode=gcc3
@@ -222,7 +222,7 @@ LDFLAGS =
 LIBOBJS = 
 LIBS = -lsqlite3 
 LTLIBOBJS = 
-MAKEINFO = ${SHELL} /home/yotu/working/AWorkLog_Diary/missing makeinfo
+MAKEINFO = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/missing makeinfo
 MKDIR_P = /bin/mkdir -p
 OBJEXT = o
 PACKAGE = aworklog_diary
@@ -238,9 +238,9 @@ SHELL = /bin/bash
 STRIP = 
 VERSION = 0.1
 abs_builddir = /home/yotu/working/AWorkLog_Diary
-abs_srcdir = /home/yotu/working/AWorkLog_Diary
+abs_srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
 abs_top_builddir = /home/yotu/working/AWorkLog_Diary
-abs_top_srcdir = /home/yotu/working/AWorkLog_Diary
+abs_top_srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
 ac_ct_CC = gcc
 ac_ct_CXX = g++
 am__include = include
@@ -260,7 +260,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-install_sh = ${SHELL} /home/yotu/working/AWorkLog_Diary/install-sh
+install_sh = ${SHELL} /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -274,12 +274,12 @@ program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
-srcdir = .
+srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
 sysconfdir = ${prefix}/etc
 target_alias = 
 top_build_prefix = 
 top_builddir = .
-top_srcdir = .
+top_srcdir = /home/yotu/Documents/workspace/C++/makes/AWorkLog_Diary
 SUBDIRS = src
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive

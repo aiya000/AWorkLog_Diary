@@ -7,20 +7,20 @@
 
 // This synchronize order with enum CmdEnum.
 const std::string Shell::CMD_LIST[] = {
-	"list"      , "ls"       , 
-	"listp"     , "listprev" , 
-	"listn"     , "listnext" , 
+	"list"      , "ls"       ,
+	"listp"     , "listprev" ,
+	"listn"     , "listnext" ,
 	"find"      ,
 	"search"    ,
-	"view"      , 
-	"edit"      , "write"    , 
-	"reedit"    , "revise"   , 
-	"remove"    , 
+	"view"      ,
+	"edit"      , "write"    ,
+	"reedit"    , "revise"   ,
+	"remove"    ,
 	"backup"    ,
 	"restore"   ,
 	"rm_backup" , "rmb"      ,
 	"ls_backup" , "lsb"      ,
-	"q"         , "exit"     , 
+	"q"         , "exit"     ,
 	"h"         , "help"
 };
 
