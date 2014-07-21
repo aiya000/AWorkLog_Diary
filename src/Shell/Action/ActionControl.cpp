@@ -45,7 +45,7 @@ bool ActionControl::confirm(){
 
 void ActionControl::viewDetails(WorkLogData workLog, bool viewComment){
 		std::cout << " --------------------"                                 << std::endl
-		          << " Time:\t\t"     << alib::timeToString(workLog.getTime()) << std::endl
+		          << " Time:\t\t"   << alib::timeToString(workLog.getTime()) << std::endl
 		          << " Function:\t" << workLog.getFunction()                 << std::endl
 		          << " Target:\t"   << workLog.getTarget()                   << std::endl;
 		if(viewComment){

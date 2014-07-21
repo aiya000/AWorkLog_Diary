@@ -15,12 +15,12 @@ const std::string Shell::CMD_LIST[] = {
 	"view"      ,
 	"edit"      , "write"    ,
 	"reedit"    , "revise"   ,
-	"remove"    ,
+	"remove"    , "rm"       ,
 	"backup"    ,
 	"restore"   ,
 	"rm_backup" , "rmb"      ,
 	"ls_backup" , "lsb"      ,
-	"q"         , "exit"     ,
+	"q"         , "quit"     , "exit" ,
 	"h"         , "help"
 };
 
@@ -31,8 +31,10 @@ void Shell::run(){
 		std::cout << "awork$ ";
 		
 		std::string cmd;
+		//TODO 1行全体取得ができていない
 		std::cin >> std::ws >> cmd;
 		try{
+			std::cout << cmd << std::endl;
 			bool noexit = this->launch( alib::trim(cmd) );
 			if(!noexit)  break;
 		}catch(std::invalid_argument& e){
@@ -106,6 +108,7 @@ bool Shell::launch(std::string& cmd) throw(std::invalid_argument){
 			else         this->reedit();
 			break;
 		case REMOVE:
+		case RM:
 			if(argFlag)  this->remove( vaToVi(cmdLine) );
 			else         this->remove();
 			break;
@@ -126,6 +129,7 @@ bool Shell::launch(std::string& cmd) throw(std::invalid_argument){
 			this->ls_backup();
 			break;
 		case Q:
+		case QUIT:
 		case EXIT:
 			return false;
 		case H:
@@ -316,7 +320,7 @@ inline void Shell::help(){
 	          << "[view n]:"                 << "\t\t\t"   << "View WorkLog by given ID"                    << std::endl
 	          << "[edit]:"                   << "\t\t\t\t" << "Edit WorkLog"                                << std::endl
 	          << "[reedit n] or [revise n]:" << '\t'       << "Re Edit WorkLog by given ID"                 << std::endl
-	          << "[remove n]:"               << "\t\t\t"   << "Remove WorkLog by given ID"                  << std::endl
+	          << "[remove n] or [rm n]:"     << "\t\t"     << "Remove WorkLog by given ID"                  << std::endl
 	          << "[backup]:"                 << "\t\t\t"   << "Backup Database file"                        << std::endl
 	          << "[restore n]:"              << "\t\t\t"   << "Restore Database file from backed up files"  << std::endl
 	          << "[rm_backup n] or [rmb n]:" << '\t'       << "Remove Backup file by given fileID"          << std::endl

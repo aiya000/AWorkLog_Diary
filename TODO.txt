@@ -4,3 +4,9 @@
 コマンドライン引数として受け取れることになるのでそっちもするかもしれない。
 
 ActionControl#doEditWorkLog
+
+
+listnの即時list表示をしないバージョンとして
+nコマンド、そしてその逆のpコマンドを実装したい。
+
+"Function", "Target"の字句を設定できるようにしたい。
